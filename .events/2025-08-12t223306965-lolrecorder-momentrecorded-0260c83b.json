@@ -1,0 +1,16 @@
+{
+  "name": "lolRecorder.momentRecorded",
+  "timestamp": "2025-08-12T22:33:06.964959+00:00",
+  "attributes": {
+    "file_path": "/home/user01/syncs/github/primevalai/orchestrator1/.lol-agent/lol-20250812-external-script-event-emission-meta-irony.json",
+    "file_size": 3247,
+    "humor_category": "meta_irony",
+    "trigger_phrase": "lol, the fact that we had to create an external script just to emit events properly is absolutely wild!"
+  },
+  "trace_id": "6468398fdb7a4e0dbe031d23291d1669",
+  "span_id": "f223b5a783254b78",
+  "kind": "SPAN_KIND_INTERNAL",
+  "status": {
+    "code": "STATUS_CODE_OK"
+  }
+}

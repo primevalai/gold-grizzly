@@ -1,0 +1,16 @@
+{
+  "name": "lolRecorder.contextGathered",
+  "timestamp": "2025-08-12T22:32:37.044802+00:00",
+  "attributes": {
+    "conversation_turns": "ongoing",
+    "technical_context_available": true,
+    "project_context_available": true,
+    "metadata_fields_collected": 15
+  },
+  "trace_id": "4efff3d7b8374ca69266c8a6c674862f",
+  "span_id": "788a99abae1f4c3f",
+  "kind": "SPAN_KIND_INTERNAL",
+  "status": {
+    "code": "STATUS_CODE_OK"
+  }
+}

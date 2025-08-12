@@ -1,0 +1,55 @@
+<![CDATA[<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>uv: An extremely fast Python package and project manager</title>
+</head>
+<body>
+    <h1>uv: Python Package and Project Manager</h1>
+    
+    <h2>Overview</h2>
+    <p>uv is an extremely fast Python package and project manager, written in Rust. It aims to be a comprehensive replacement for multiple Python tools including pip, pip-tools, pipx, poetry, pyenv, twine, and virtualenv.</p>
+    
+    <h2>Key Highlights</h2>
+    <ul>
+        <li>🚀 Single tool to replace multiple Python package management tools</li>
+        <li>⚡️ 10-100x faster than pip for package installation</li>
+        <li>🗂️ Comprehensive project management with universal lockfile</li>
+        <li>❇️ Script running with inline dependency metadata support</li>
+        <li>🐍 Python version installation and management</li>
+        <li>🛠️ Tool installation and running</li>
+        <li>🔩 Pip-compatible interface</li>
+        <li>💾 Disk-space efficient with global cache</li>
+    </ul>
+
+    <h2>Installation</h2>
+    <pre><code>curl -LsSf https://astral.sh/uv/install.sh | sh</code></pre>
+
+    <h2>Quick Usage Examples</h2>
+    
+    <h3>Project Management</h3>
+    <pre><code>uv init example
+cd example
+uv add ruff
+uv run ruff check
+uv lock
+uv sync</code></pre>
+
+    <h3>Script Management</h3>
+    <pre><code>echo 'import requests; print(requests.get("https://astral.sh"))' > example.py
+uv add --script example.py requests
+uv run example.py</code></pre>
+
+    <h3>Tool Running</h3>
+    <pre><code>uvx pycowsay "hello world!"
+uv tool install ruff
+ruff --version</code></pre>
+
+    <h3>Python Version Management</h3>
+    <pre><code>uv python install 3.10 3.11 3.12
+uv venv --python 3.12.0
+uv run --python pypy@3.8 -- python</code></pre>
+
+    <p>Created from official uv documentation at docs.astral.sh/uv</p>
+</body>
+</html>]]>

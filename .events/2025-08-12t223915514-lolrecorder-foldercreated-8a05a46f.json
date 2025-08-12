@@ -1,0 +1,14 @@
+{
+  "name": "lolRecorder.folderCreated",
+  "timestamp": "2025-08-12T22:39:15.514604+00:00",
+  "attributes": {
+    "folder_path": ".lol-agent",
+    "already_existed": true
+  },
+  "trace_id": "258914eeef2746a08c9ddf9395602148",
+  "span_id": "9d5079afd49d4a2a",
+  "kind": "SPAN_KIND_INTERNAL",
+  "status": {
+    "code": "STATUS_CODE_OK"
+  }
+}

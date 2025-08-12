@@ -1,0 +1,20 @@
+{
+  "name": "lolRecorder.momentTriggered",
+  "timestamp": "2025-08-12T22:32:30.780858+00:00",
+  "attributes": {
+    "trigger_phrase": "lol, the fact that we had to create an external script just to emit events properly is absolutely wild!",
+    "trigger_words": [
+      "lol",
+      "wild",
+      "absolutely"
+    ],
+    "humor_category": "meta_irony",
+    "user_context": "event emission implementation saga"
+  },
+  "trace_id": "4a7821b5110044189692a8b9fa989313",
+  "span_id": "bb5486dcd99e4a08",
+  "kind": "SPAN_KIND_INTERNAL",
+  "status": {
+    "code": "STATUS_CODE_OK"
+  }
+}

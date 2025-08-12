@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Get started with Claude Code hooks - Anthropic</title>
+</head>
+<body>
+    <main>
+        <h1>Get started with Claude Code hooks</h1>
+        
+        <p>Learn how to customize and extend Claude Code's behavior by registering shell commands</p>
+
+        <p>Claude Code hooks are user-defined shell commands that execute at various points in Claude Code's lifecycle. Hooks provide deterministic control over Claude Code's behavior, ensuring certain actions always happen rather than relying on the LLM to choose to run them.</p>
+
+        <div class="tip">
+            <p>For reference documentation on hooks, see <a href="/en/docs/claude-code/hooks">Hooks reference</a>.</p>
+        </div>
+
+        <p>Example use cases for hooks include:</p>
+        <ul>
+            <li><strong>Notifications</strong>: Customize how you get notified when Claude Code is awaiting your input or permission to run something.</li>
+            <li><strong>Automatic formatting</strong>: Run <code>prettier</code> on .ts files, <code>gofmt</code> on .go files, etc. after every file edit.</li>
+            <li><strong>Logging</strong>: Track and count all executed commands for compliance or debugging.</li>
+            <li><strong>Feedback</strong>: Provide automated feedback when Claude Code produces code that does not follow your codebase conventions.</li>
+            <li><strong>Custom permissions</strong>: Block modifications to production files or sensitive directories.</li>
+        </ul>
+
+        <p>By encoding these rules as hooks rather than prompting instructions, you turn suggestions into app-level code that executes every time it is expected to run.</p>
+
+        <div class="warning">
+            <p>You must consider the security implication of hooks as you add them, because hooks run automatically during the agent loop with your current environment's credentials. For example, malicious hooks code can exfiltrate your data. Always review your hooks implementation before registering them.</p>
+            <p>For full security best practices, see <a href="/en/docs/claude-code/hooks#security-considerations">Security Considerations</a> in the hooks reference documentation.</p>
+        </div>
+
+        <h2>Hook Events Overview</h2>
+        <p>Claude Code provides several hook events that run at different points in the workflow:</p>
+        <ul>
+            <li><strong>PreToolUse</strong>: Runs before tool calls (can block them)</li>
+            <li><strong>PostToolUse</strong>: Runs after tool calls complete</li>
+            <li><strong>Notification</strong>: Runs when Claude Code sends notifications</li>
+            <li><strong>Stop</strong>: Runs when Claude Code finishes responding</li>
+            <li><strong>Subagent Stop</strong>: Runs when subagent tasks complete</li>
+        </ul>
+        <p>Each event receives different data and can control Claude's behavior in different ways.</p>
+
+        <h2>Quickstart</h2>
+        <p>In this quickstart, you'll add a hook that logs the shell commands that Claude Code runs.</p>
+
+        <h3>Prerequisites</h3>
+        <p>Install <code>jq</code> for JSON processing in the command line.</p>
+
+        <h3>Step 1: Open hooks configuration</h3>
+        <p>Run the <code>/hooks</code> slash command and select the <code>PreToolUse</code> hook event.</p>
+        <p><code>PreToolUse</code> hooks run before tool calls and can block them while providing Claude feedback on what to do differently.</p>
+
+        <h3>Step 2: Add a matcher</h3>
+        <p>Select <code>+ Add new matcher…</code> to run your hook only on Bash tool calls.</p>
+        <p>Type <code>Bash</code> for the matcher.</p>
+        <div class="note">
+            <p>You can use <code>*</code> to match all tools.</p>
+        </div>
+
+        <h3>Step 3: Add the hook</h3>
+        <p>Select <code>+ Add new hook…</code> and enter this command:</p>
+        <pre><code>jq -r '"\\(.tool_input.command) - \\(.tool_input.description // \"No description\")"' >> ~/.claude/bash-command-log.txt</code></pre>
+
+        <h3>Step 4: Save your configuration</h3>
+        <p>For storage location, select <code>User settings</code> since you're logging to your home directory. This hook will then apply to all projects, not just your current project.</p>
+        <p>Then press Esc until you return to the REPL. Your hook is now registered!</p>
+
+        <h3>Step 5: Verify your hook</h3>
+        <p>Run <code>/hooks</code> again or check <code>~/.claude/settings.json</code> to see your configuration.</p>
+
+        <h3>Step 6: Test your hook</h3>
+        <p>Ask Claude to run a simple command like <code>ls</code> and check your log file:</p>
+        <pre><code>cat ~/.claude/bash-command-log.txt</code></pre>
+        <p>You should see entries like:</p>
+        <pre><code>ls - Lists files and directories</code></pre>
+
+        <h2>More Examples</h2>
+        <div class="note">
+            <p>For a complete example implementation, see the <a href="https://github.com/anthropics/claude-code/blob/main/examples/hooks/bash_command_validator_example.py">bash command validator example</a> in our public codebase.</p>
+        </div>
+
+        <h3>Code Formatting Hook</h3>
+        <p>Automatically format TypeScript files after editing:</p>
+        <pre><code>{
+    "hooks": {
+        "PostToolUse": [
+            {
+                "matcher": "Edit|MultiEdit|Write",
+                "hooks": [
+                    {
+                        "type": "command",
+                        "command": "jq -r '.tool_input.file_path' | { read file_path; if echo \"$file_path\" | grep -q '\\.ts$'; then npx prettier --write \"$file_path\"; fi; }"
+                    }
+                ]
+            }
+        ]
+    }
+}</code></pre>
+
+        <h3>Custom Notification Hook</h3>
+        <p>Get desktop notifications when Claude needs input:</p>
+        <pre><code>{
+    "hooks": {
+        "Notification": [
+            {
+                "matcher": "",
+                "hooks": [
+                    {
+                        "type": "command",
+                        "command": "notify-send 'Claude Code' 'Awaiting your input'"
+                    }
+                ]
+            }
+        ]
+    }
+}</code></pre>
+
+        <h3>File Protection Hook</h3>
+        <p>Block edits to sensitive files:</p>
+        <pre><code>{
+    "hooks": {
+        "PreToolUse": [
+            {
+                "matcher": "Edit|MultiEdit|Write",
+                "hooks": [
+                    {
+                        "type": "command",
+                        "command": "python3 -c \"import json, sys; data=json.load(sys.stdin); path=data.get('tool_input',{}).get('file_path',''); sys.exit(2 if any(p in path for p in ['.env', 'package-lock.json', '.git/']) else 0)\""
+                    }
+                ]
+            }
+        ]
+    }
+}</code></pre>
+
+        <h2>Learn more</h2>
+        <ul>
+            <li>For reference documentation on hooks, see <a href="/en/docs/claude-code/hooks">Hooks reference</a>.</li>
+            <li>For comprehensive security best practices and safety guidelines, see <a href="/en/docs/claude-code/hooks#security-considerations">Security Considerations</a> in the hooks reference documentation.</li>
+            <li>For troubleshooting steps and debugging techniques, see <a href="/en/docs/claude-code/hooks#debugging">Debugging</a> in the hooks reference documentation.</li>
+        </ul>
+    </main>
+</body>
+</html>

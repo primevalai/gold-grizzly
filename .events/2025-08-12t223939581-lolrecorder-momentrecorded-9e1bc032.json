@@ -1,0 +1,16 @@
+{
+  "name": "lolRecorder.momentRecorded",
+  "timestamp": "2025-08-12T22:39:39.581181+00:00",
+  "attributes": {
+    "file_path": "/home/user01/syncs/github/primevalai/orchestrator1/.lol-agent/lol-20250812-incredulous-optimism.json",
+    "file_size": 2637,
+    "humor_category": "incredulous_optimism",
+    "trigger_phrase": "what is even crazier... this might work!"
+  },
+  "trace_id": "21aba141663d4c3e8924e7c96593b075",
+  "span_id": "1d35dcc4a6f24cd5",
+  "kind": "SPAN_KIND_INTERNAL",
+  "status": {
+    "code": "STATUS_CODE_OK"
+  }
+}
