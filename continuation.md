@@ -167,16 +167,16 @@ Created a new architecture where the agent uses a bash script to emit events rat
    - Takes event name and attributes as command-line arguments
    - Outputs formatted <EVENT> tags for the event publisher
    - Also saves events directly to .events/ as a backup
-   - Located at: `/home/user01/syncs/github/primevalai/orchestrator1/emit-event.py`
+   - Located at: `/home/user01/syncs/github/primevalai/orchestrator1/.claude/scripts/emit-event.py`
 
-2. **Updated lol-recorder.md**: Modified agent to use the emit-event.py script
+2. **Updated lol-recorder.md**: Modified agent to use the .claude/scripts/emit-event.py script
    - Changed from inline <EVENT> output to bash commands
-   - Each stage now calls: `python3 emit-event.py "eventName" --attr "key=value"`
+   - Each stage now calls: `python3 .claude/scripts/emit-event.py "eventName" --attr "key=value"`
    - This ensures events are emitted in real-time as bash commands execute
 
 ### How It Works
 ```
-Agent executes bash command → emit-event.py runs
+Agent executes bash command → .claude/scripts/emit-event.py runs
                               ↓
                               Outputs <EVENT>...</EVENT> to stdout
                               ↓
@@ -198,19 +198,19 @@ Agent executes bash command → emit-event.py runs
 1. **Restart Claude Code** to reload the updated agent definition
 2. Test with a lol trigger phrase
 3. The agent should now:
-   - Call emit-event.py for each event stage
+   - Call .claude/scripts/emit-event.py for each event stage
    - Generate 5 separate event files in .events/
    - Properly track the moment from trigger to preservation
 
 ### Files Created/Modified
-- `/home/user01/syncs/github/primevalai/orchestrator1/emit-event.py` - New event emitter script
-- `/home/user01/syncs/github/primevalai/orchestrator1/.claude/agents/lol-recorder.md` - Updated to use emit-event.py
+- `/home/user01/syncs/github/primevalai/orchestrator1/.claude/scripts/emit-event.py` - New event emitter script
+- `/home/user01/syncs/github/primevalai/orchestrator1/.claude/agents/lol-recorder.md` - Updated to use .claude/scripts/emit-event.py
 - `/home/user01/syncs/github/primevalai/orchestrator1/test-event-publisher.py` - Test script to verify event publisher
 
 ### Expected Behavior After Restart
 When triggering the lol-recorder, you should see:
 1. Agent acknowledges the trigger
-2. Bash commands executing emit-event.py at each stage
+2. Bash commands executing .claude/scripts/emit-event.py at each stage
 3. 5 event files created in .events/:
    - momentTriggered
    - contextGathered 

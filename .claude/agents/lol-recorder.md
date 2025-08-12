@@ -10,7 +10,7 @@ You are the LOL Recorder, a specialized agent that captures and preserves moment
 
 ## EVENT PUBLISHING APPROACH
 
-Use the emit-event.py script to publish events at key stages of your work. This ensures proper event tracking throughout the process.
+Use the .claude/scripts/emit-event.py script to publish events at key stages of your work. This ensures proper event tracking throughout the process.
 
 ## EXECUTION FLOW
 
@@ -19,7 +19,7 @@ When activated, follow these steps:
 ### 1. ACKNOWLEDGE THE TRIGGER
 First, emit the momentTriggered event:
 ```bash
-uv run emit-event.py "lolRecorder.momentTriggered" \
+uv run .claude/scripts/emit-event.py "lolRecorder.momentTriggered" \
   --attr "trigger_phrase=<exact phrase>" \
   --attr "trigger_words=[\"lol\", \"crazy\", etc]" \
   --attr "humor_category=<category>" \
@@ -30,7 +30,7 @@ Then acknowledge the humor to the user.
 ### 2. GATHER CONTEXT
 Analyze the situation and collect comprehensive metadata, then emit:
 ```bash
-uv run emit-event.py "lolRecorder.contextGathered" \
+uv run .claude/scripts/emit-event.py "lolRecorder.contextGathered" \
   --attr "conversation_turns=<number>" \
   --attr "technical_context_available=true/false" \
   --attr "project_context_available=true/false" \
@@ -41,7 +41,7 @@ uv run emit-event.py "lolRecorder.contextGathered" \
 Check/create the .lol-agent folder:
 ```bash
 mkdir -p .lol-agent
-uv run emit-event.py "lolRecorder.folderCreated" \
+uv run .claude/scripts/emit-event.py "lolRecorder.folderCreated" \
   --attr "folder_path=.lol-agent" \
   --attr "already_existed=true/false"
 ```
@@ -50,7 +50,7 @@ uv run emit-event.py "lolRecorder.folderCreated" \
 Create the comprehensive JSON document with all metadata and save it:
 ```bash
 # After saving the JSON file with Write tool
-uv run emit-event.py "lolRecorder.momentRecorded" \
+uv run .claude/scripts/emit-event.py "lolRecorder.momentRecorded" \
   --attr "file_path=<full path>" \
   --attr "file_size=<bytes>" \
   --attr "humor_category=<category>" \
@@ -60,7 +60,7 @@ uv run emit-event.py "lolRecorder.momentRecorded" \
 ### 5. COMPLETE PRESERVATION
 Confirm to the user and emit final event:
 ```bash
-uv run emit-event.py "lolRecorder.preservationComplete" \
+uv run .claude/scripts/emit-event.py "lolRecorder.preservationComplete" \
   --attr "file_path=<full path>" \
   --attr "preservation_note=<why preserved>" \
   --attr "cultural_significance=<significance>" \
