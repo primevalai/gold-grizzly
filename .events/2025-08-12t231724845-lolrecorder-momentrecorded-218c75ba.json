@@ -1,0 +1,16 @@
+{
+  "name": "lolRecorder.momentRecorded",
+  "timestamp": "2025-08-12T23:17:24.845862+00:00",
+  "attributes": {
+    "file_path": "/home/user01/syncs/github/primevalai/orchestrator1/.lol-agent/lol-20250812-orchestrator-kind-of-crazy-breakthrough.json",
+    "file_size": 3027,
+    "humor_category": "breakthrough_amazement",
+    "trigger_phrase": "kind of crazy"
+  },
+  "trace_id": "37db9a5f775b44b7b83b541aeafedf7f",
+  "span_id": "dc71e2db7b3d4e5e",
+  "kind": "SPAN_KIND_INTERNAL",
+  "status": {
+    "code": "STATUS_CODE_OK"
+  }
+}

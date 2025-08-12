@@ -1,0 +1,18 @@
+{
+  "name": "lolRecorder.momentTriggered",
+  "timestamp": "2025-08-12T23:16:28.631103+00:00",
+  "attributes": {
+    "trigger_phrase": "kind of crazy",
+    "trigger_words": [
+      "crazy"
+    ],
+    "humor_category": "breakthrough_amazement",
+    "user_context": "orchestrator project getting functional"
+  },
+  "trace_id": "680a807d0cb545f2b59d412eb33bb0d6",
+  "span_id": "ffc47b39e86149ee",
+  "kind": "SPAN_KIND_INTERNAL",
+  "status": {
+    "code": "STATUS_CODE_OK"
+  }
+}
