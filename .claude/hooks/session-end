@@ -1,0 +1,84 @@
+#!/bin/bash
+
+# Claude Code Session End Hook
+# Automatically stops Gold Grizzly Event System servers when a session ends
+
+set -e
+
+echo "🛑 [Session End Hook] Stopping Gold Grizzly Event System..."
+
+# Change to the apps directory
+cd ".apps" || {
+    echo "❌ [Session End Hook] Failed to find .apps directory"
+    exit 1
+}
+
+# Function to safely kill a process
+kill_process() {
+    local pid_file=$1
+    local process_name=$2
+    
+    if [[ -f "$pid_file" ]]; then
+        local pid=$(cat "$pid_file")
+        if kill -0 "$pid" 2>/dev/null; then
+            echo "🔄 [Session End Hook] Stopping $process_name (PID: $pid)..."
+            kill "$pid" 2>/dev/null || true
+            
+            # Wait for graceful shutdown
+            local count=0
+            while kill -0 "$pid" 2>/dev/null && [[ $count -lt 10 ]]; do
+                sleep 1
+                ((count++))
+            done
+            
+            # Force kill if still running
+            if kill -0 "$pid" 2>/dev/null; then
+                echo "⚡ [Session End Hook] Force stopping $process_name..."
+                kill -9 "$pid" 2>/dev/null || true
+            fi
+        fi
+        rm -f "$pid_file"
+        echo "✅ [Session End Hook] $process_name stopped"
+    else
+        echo "ℹ️  [Session End Hook] No $process_name PID file found"
+    fi
+}
+
+# Stop servers using PID files
+kill_process "api.pid" "API server"
+kill_process "ui.pid" "UI server"
+
+# Fallback: kill by process name/port
+echo "🧹 [Session End Hook] Cleaning up any remaining processes..."
+pkill -f "uvicorn.*main:app.*--port 8765" 2>/dev/null || true
+pkill -f "next dev.*--port 3210" 2>/dev/null || true
+
+# Clean up log files (optional)
+if [[ -f "api.log" ]]; then
+    echo "📋 [Session End Hook] Archiving API logs..."
+    mv api.log "api-$(date +%Y%m%d-%H%M%S).log" 2>/dev/null || rm -f api.log
+fi
+
+if [[ -f "ui.log" ]]; then
+    echo "📋 [Session End Hook] Archiving UI logs..."
+    mv ui.log "ui-$(date +%Y%m%d-%H%M%S).log" 2>/dev/null || rm -f ui.log
+fi
+
+# Final check for lingering processes
+sleep 2
+if pgrep -f "uvicorn.*main:app.*--port 8765" > /dev/null; then
+    echo "⚠️  [Session End Hook] Warning: API server may still be running"
+else
+    echo "✅ [Session End Hook] API server confirmed stopped"
+fi
+
+if pgrep -f "next dev.*--port 3210" > /dev/null; then
+    echo "⚠️  [Session End Hook] Warning: UI server may still be running"
+else
+    echo "✅ [Session End Hook] UI server confirmed stopped"
+fi
+
+echo ""
+echo "🎯 [Session End Hook] Gold Grizzly Event System stopped successfully!"
+echo "📁 Logs archived in .apps/ directory"
+echo ""

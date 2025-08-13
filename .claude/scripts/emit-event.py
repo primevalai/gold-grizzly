@@ -1,7 +1,13 @@
 #!/usr/bin/env python3
 """
 Event emitter script for agents to publish events.
-Usage: python3 emit-event.py <event_name> [--attr key=value ...]
+Usage: python3 emit-event.py <event_name> [options]
+
+Options:
+  --attr key=value      Event attributes (can be used multiple times)
+  --aggregate-id ID     Aggregate ID (defaults to generated UUID for event aggregate)
+  --causation-id ID     Causation ID (for parent-child relationships)
+  --correlation-id ID   Correlation ID (for workflow grouping)
 """
 
 import sys
@@ -13,7 +19,9 @@ import urllib.request
 import urllib.parse
 import urllib.error
 
-def send_to_api(event_name: str, attributes: dict, timestamp: str) -> bool:
+def send_to_api(event_name: str, attributes: dict, timestamp: str, 
+                aggregate_id: str = None, causation_id: str = None, 
+                correlation_id: str = None) -> bool:
     """Send event to FastAPI service using urllib."""
     try:
         event_data = {
@@ -22,12 +30,20 @@ def send_to_api(event_name: str, attributes: dict, timestamp: str) -> bool:
             "timestamp": timestamp
         }
         
+        # Add aggregate management fields if provided
+        if aggregate_id:
+            event_data["aggregate_id"] = aggregate_id
+        if causation_id:
+            event_data["causation_id"] = causation_id
+        if correlation_id:
+            event_data["correlation_id"] = correlation_id
+        
         # Convert to JSON and encode
         json_data = json.dumps(event_data).encode('utf-8')
         
         # Create request
         req = urllib.request.Request(
-            "http://127.0.0.1:8000/events/",
+            "http://127.0.0.1:8765/events/",
             data=json_data,
             headers={'Content-Type': 'application/json'}
         )
@@ -74,15 +90,55 @@ def save_to_file(event: dict) -> None:
     print(f"Event saved to file: {event['name']} -> {filepath}", file=sys.stderr)
 
 
+def validate_event_name(event_name: str) -> None:
+    """Validate that event name follows the three-aggregate naming convention."""
+    valid_prefixes = ["agent.", "workflow.", "system."]
+    
+    if not any(event_name.startswith(prefix) for prefix in valid_prefixes):
+        print(f"ERROR: Event name must start with one of: {', '.join(valid_prefixes)}", file=sys.stderr)
+        print(f"Got: {event_name}", file=sys.stderr)
+        print("", file=sys.stderr)
+        print("Examples:", file=sys.stderr)
+        print("  agent.lolRecorder.started", file=sys.stderr)
+        print("  workflow.started", file=sys.stderr)  
+        print("  system.session_started", file=sys.stderr)
+        sys.exit(1)
+    
+    # Additional validation based on event type
+    if event_name.startswith("agent."):
+        parts = event_name.split(".")
+        if len(parts) < 3:
+            print("ERROR: Agent events must follow format: agent.<agentName>.<eventName>", file=sys.stderr)
+            print(f"Got: {event_name}", file=sys.stderr)
+            sys.exit(1)
+
+
 def main():
     if len(sys.argv) < 2:
-        print("Usage: python3 emit-event.py <event_name> [--attr key=value ...]", file=sys.stderr)
+        print("Usage: python3 emit-event.py <event_name> [options]", file=sys.stderr)
+        print("Options:")
+        print("  --attr key=value      Event attributes (can be used multiple times)")
+        print("  --aggregate-id ID     Aggregate ID (required for agent events)")
+        print("  --causation-id ID     Causation ID (for parent-child relationships)")
+        print("  --correlation-id ID   Correlation ID (required for workflow events)")
+        print("", file=sys.stderr)
+        print("Event naming convention:")
+        print("  agent.<agentName>.<eventName>  - Agent lifecycle and actions")
+        print("  workflow.<eventName>           - Workflow lifecycle")
+        print("  system.<eventName>             - System-level events")
         sys.exit(1)
     
     event_name = sys.argv[1]
     
-    # Parse attributes
+    # Validate event name follows naming convention
+    validate_event_name(event_name)
+    
+    # Parse arguments
     attributes = {}
+    aggregate_id = None
+    causation_id = None
+    correlation_id = None
+    
     i = 2
     while i < len(sys.argv):
         if sys.argv[i] == "--attr" and i + 1 < len(sys.argv):
@@ -95,8 +151,28 @@ def main():
                 except:
                     attributes[key] = value
             i += 2
+        elif sys.argv[i] == "--aggregate-id" and i + 1 < len(sys.argv):
+            aggregate_id = sys.argv[i + 1]
+            i += 2
+        elif sys.argv[i] == "--causation-id" and i + 1 < len(sys.argv):
+            causation_id = sys.argv[i + 1]
+            i += 2
+        elif sys.argv[i] == "--correlation-id" and i + 1 < len(sys.argv):
+            correlation_id = sys.argv[i + 1]
+            i += 2
         else:
             i += 1
+    
+    # Additional validation based on event type
+    if event_name.startswith("agent.") and not aggregate_id:
+        print("ERROR: Agent events require --aggregate-id parameter", file=sys.stderr)
+        print(f"Event: {event_name}", file=sys.stderr)
+        sys.exit(1)
+    
+    if event_name.startswith("workflow.") and not correlation_id:
+        print("ERROR: Workflow events require --correlation-id parameter", file=sys.stderr)
+        print(f"Event: {event_name}", file=sys.stderr)
+        sys.exit(1)
     
     # Create event with timestamp
     timestamp = datetime.now(timezone.utc).isoformat()
@@ -106,11 +182,20 @@ def main():
         "attributes": attributes
     }
     
+    # Add aggregate management fields if provided
+    if aggregate_id:
+        event["aggregate_id"] = aggregate_id
+    if causation_id:
+        event["causation_id"] = causation_id
+    if correlation_id:
+        event["correlation_id"] = correlation_id
+    
     # Output as EVENT tag for event publisher to process (preserve compatibility)
     print(f'<EVENT>{json.dumps(event)}</EVENT>')
     
     # Try to send to API first, fallback to file storage
-    api_success = send_to_api(event_name, attributes, timestamp)
+    api_success = send_to_api(event_name, attributes, timestamp, 
+                              aggregate_id, causation_id, correlation_id)
     
     if not api_success:
         print("Falling back to file storage...", file=sys.stderr)

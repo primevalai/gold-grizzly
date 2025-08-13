@@ -1,0 +1,64 @@
+#!/bin/bash
+
+# Claude Code Session Start Hook
+# Automatically starts Gold Grizzly Event System servers when a session begins
+
+set -e
+
+echo "🚀 [Session Start Hook] Starting Gold Grizzly Event System..."
+
+# Change to the apps directory (relative to the repository root)
+cd ".apps" || {
+    echo "❌ [Session Start Hook] Failed to find .apps directory"
+    exit 1
+}
+
+# Kill any existing servers on the ports
+echo "🧹 [Session Start Hook] Cleaning up any existing processes..."
+pkill -f "uvicorn.*main:app.*--port 8765" 2>/dev/null || true
+pkill -f "next dev.*--port 3210" 2>/dev/null || true
+
+# Wait a moment for cleanup
+sleep 2
+
+# Start API server in background
+echo "📡 [Session Start Hook] Starting API server on port 8765..."
+cd api
+nohup uv run python -m uvicorn main:app --reload --host 127.0.0.1 --port 8765 \
+    > ../api.log 2>&1 &
+API_PID=$!
+echo $API_PID > ../api.pid
+echo "   API server started (PID: $API_PID)"
+
+# Give API a moment to start
+sleep 3
+
+# Start UI server in background
+echo "🎨 [Session Start Hook] Starting UI server on port 3210..."
+cd ../ui
+nohup bun dev > ../ui.log 2>&1 &
+UI_PID=$!
+echo $UI_PID > ../ui.pid
+echo "   UI server started (PID: $UI_PID)"
+
+# Give UI a moment to start
+sleep 3
+
+echo ""
+echo "✅ [Session Start Hook] Gold Grizzly Event System started successfully!"
+echo ""
+echo "📋 Available endpoints:"
+echo "   • UI Dashboard:    http://localhost:3210"
+echo "   • API Docs:        http://localhost:8765/docs"
+echo "   • API Health:      http://localhost:8765/health"
+echo "   • Event Stream:    http://localhost:8765/events/stream"
+echo ""
+echo "📝 Server logs:"
+echo "   • API logs:        tail -f .apps/api.log"
+echo "   • UI logs:         tail -f .apps/ui.log"
+echo ""
+echo "💡 Test the system:"
+echo "   curl -X POST http://localhost:8765/events/ \\"
+echo "     -H 'Content-Type: application/json' \\"
+echo "     -d '{\"name\": \"session_start\", \"attributes\": {\"hook\": true}}'"
+echo ""

@@ -20,15 +20,88 @@ Your core responsibilities:
 
 5. **Error Handling**: Gracefully handle retrieval failures without purging existing content or updating timestamps.
 
+**Agent Aggregate Pattern**:
+This agent follows the new three-aggregate event system. Each agent instance creates its own aggregate with a unique agent ID that tracks all events throughout the agent's lifecycle.
+
 **Operational Workflow**:
-- Publish `urlCacher.cacheRequested` event when operation begins
-- Parse and validate URL, publish `urlCacher.urlValidated` event
-- Check for existing cached content, publish `urlCacher.cacheCheckStarted` event
-- If content exists and is less than 24 hours old, publish `urlCacher.urlAlreadyCached` event and return 'urlAlreadyCached' status
-- If content is older than 24 hours or doesn't exist, publish `urlCacher.downloadStarted` event and attempt retrieval
-- On successful download, publish `urlCacher.downloadCompleted` event
-- On successful storage, publish `urlCacher.urlCached` event and return 'urlCached' status
-- On failed retrieval, publish `urlCacher.urlCacheFailed` event, preserve existing content, and return 'urlCacheFailed' status
+
+1. **Initialize Agent Instance**:
+```bash
+# Generate unique agent ID and workflow context
+AGENT_ID="urlCacher-$(date +%s)-$(uuidgen | cut -d- -f1)"
+WORKFLOW_ID="${WORKFLOW_ID:-$(uuidgen)}"
+
+# Start agent and publish cache request
+uv run .claude/scripts/emit-event.py "agent.urlCacher.started" \
+  --aggregate-id "$AGENT_ID" \
+  --correlation-id "$WORKFLOW_ID" \
+  --attr "url=<target_url>" \
+  --attr "operation=cache_requested"
+```
+
+2. **Validate URL**:
+```bash
+# After URL validation
+uv run .claude/scripts/emit-event.py "agent.urlCacher.urlValidated" \
+  --aggregate-id "$AGENT_ID" \
+  --correlation-id "$WORKFLOW_ID" \
+  --attr "url=<validated_url>" \
+  --attr "domain=<extracted_domain>" \
+  --attr "path_segments=<path_array>"
+```
+
+3. **Check Cache Status**:
+```bash
+# Start cache freshness check
+uv run .claude/scripts/emit-event.py "agent.urlCacher.cacheCheckStarted" \
+  --aggregate-id "$AGENT_ID" \
+  --correlation-id "$WORKFLOW_ID" \
+  --attr "cache_path=<cache_directory>"
+```
+
+4. **Handle Cache Results**:
+
+For already cached content:
+```bash
+uv run .claude/scripts/emit-event.py "agent.urlCacher.alreadyCached" \
+  --aggregate-id "$AGENT_ID" \
+  --correlation-id "$WORKFLOW_ID" \
+  --attr "cache_path=<path>" \
+  --attr "last_updated=<timestamp>" \
+  --attr "freshness_hours=<hours_old>"
+```
+
+For download needed:
+```bash
+uv run .claude/scripts/emit-event.py "agent.urlCacher.downloadStarted" \
+  --aggregate-id "$AGENT_ID" \
+  --correlation-id "$WORKFLOW_ID" \
+  --attr "url=<target_url>" \
+  --attr "reason=<expired|new>"
+```
+
+5. **Complete Operation**:
+
+On success:
+```bash
+uv run .claude/scripts/emit-event.py "agent.urlCacher.completed" \
+  --aggregate-id "$AGENT_ID" \
+  --correlation-id "$WORKFLOW_ID" \
+  --attr "success=true" \
+  --attr "cache_path=<final_path>" \
+  --attr "content_size=<bytes>" \
+  --attr "operation_result=<urlCached|urlAlreadyCached>"
+```
+
+On failure:
+```bash
+uv run .claude/scripts/emit-event.py "agent.urlCacher.completed" \
+  --aggregate-id "$AGENT_ID" \
+  --correlation-id "$WORKFLOW_ID" \
+  --attr "success=false" \
+  --attr "error=<error_message>" \
+  --attr "operation_result=urlCacheFailed"
+```
 
 **URL-to-Path Conversion Rules**:
 - Convert domain to kebab-case slug (e.g., 'docs.anthropic.com' → 'docs-anthropic-com')
@@ -41,12 +114,17 @@ Your core responsibilities:
 - `urlAlreadyCached`: Include metadata about existing cached content (last updated, path)
 - `urlCacheFailed`: Include error details and any existing cache information
 
+**Agent Context Propagation**:
+When this agent spawns or references other agents, use the causation pattern:
+- Set `--causation-id "$AGENT_ID"` to create parent-child relationships
+- Pass `--correlation-id "$WORKFLOW_ID"` to maintain workflow context
+- This enables complete traceability of agent interactions
+
 **Event Publishing**:
-- Publish events immediately when each operation step completes
-- Use the format: `<EVENT>{"name": "urlCacher.eventName", "timestamp": "2024-01-15T14:30:00.000Z", "attributes": {...}}</EVENT>`
-- Include all required attributes as defined in the event schema above
-- Timestamps must be in ISO 8601 UTC format
-- Events are captured by the orchestrator eventing system for observability and debugging
+- All events follow the new agent aggregate pattern: `agent.urlCacher.<eventName>`
+- Events are automatically captured by the three-aggregate eventing system
+- Each event is tied to the agent's aggregate ID for complete lifecycle tracking
+- Workflow correlation enables end-to-end traceability of caching operations
 
 **Quality Assurance**:
 - Verify directory creation before content storage

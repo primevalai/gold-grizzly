@@ -17,6 +17,15 @@ class EventRequest(BaseModel):
     timestamp: Optional[datetime] = Field(
         default=None, description="Event timestamp (UTC)"
     )
+    aggregate_id: Optional[str] = Field(
+        default=None, description="Aggregate ID (for agent instances)"
+    )
+    causation_id: Optional[str] = Field(
+        default=None, description="Causation ID (parent-child relationships)"
+    )
+    correlation_id: Optional[str] = Field(
+        default=None, description="Correlation ID (workflow grouping)"
+    )
 
 
 class EventResponse(BaseModel):

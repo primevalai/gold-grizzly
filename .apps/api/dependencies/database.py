@@ -41,15 +41,26 @@ class DatabaseManager:
         self, 
         limit: int = 100, 
         offset: int = 0,
-        aggregate_type: str = "event_aggregate",
+        aggregate_type: str = None,
         event_type: str = None
     ) -> List[Dict[str, Any]]:
         """Get recent events from the event store."""
         store = await self.get_store()
         
         try:
-            # Load events by aggregate type (our EventAggregate type)
-            events = await store.load_events_by_type(aggregate_type)
+            # Load events from all aggregates if no specific type provided
+            if aggregate_type:
+                events = await store.load_events_by_type(aggregate_type)
+            else:
+                # Load events from all three aggregate types
+                agent_events = await store.load_events_by_type("agent_aggregate")
+                workflow_events = await store.load_events_by_type("workflow_aggregate") 
+                system_events = await store.load_events_by_type("system_aggregate")
+                # Also include legacy events for compatibility
+                legacy_events = await store.load_events_by_type("event_aggregate")
+                
+                # Combine all events
+                events = list(agent_events) + list(workflow_events) + list(system_events) + list(legacy_events)
             
             # Convert events to dictionaries and apply filtering
             event_dicts = []
@@ -86,6 +97,72 @@ class DatabaseManager:
             
         except Exception as e:
             print(f"Error retrieving events: {e}")
+            return []
+    
+    async def get_agent_events(self, agent_id: str, limit: int = 100) -> List[Dict[str, Any]]:
+        """Get all events for a specific agent aggregate."""
+        return await self.get_recent_events(
+            limit=limit,
+            aggregate_type="agent_aggregate",
+            event_type=None
+        )
+    
+    async def get_workflow_events(self, workflow_id: str, limit: int = 100) -> List[Dict[str, Any]]:
+        """Get all events for a specific workflow aggregate."""
+        return await self.get_recent_events(
+            limit=limit,
+            aggregate_type="workflow_aggregate",
+            event_type=None
+        )
+    
+    async def get_system_events(self, session_id: str, limit: int = 100) -> List[Dict[str, Any]]:
+        """Get all events for a specific system/session aggregate."""
+        return await self.get_recent_events(
+            limit=limit,
+            aggregate_type="system_aggregate",
+            event_type=None
+        )
+    
+    async def get_workflow_agents(self, workflow_id: str) -> List[Dict[str, Any]]:
+        """Get all agents that participated in a specific workflow."""
+        store = await self.get_store()
+        
+        try:
+            # Load all agent events and filter by correlation_id (workflow_id)
+            events = await store.load_events_by_type("agent_aggregate")
+            
+            workflow_agents = []
+            seen_agents = set()
+            
+            for event in events:
+                event_dict = event.to_dict()
+                
+                # Check if this event is part of the workflow
+                correlation_id = event_dict.get('correlation_id')
+                if correlation_id == workflow_id:
+                    agent_id = event_dict.get('aggregate_id')
+                    
+                    if agent_id and agent_id not in seen_agents:
+                        seen_agents.add(agent_id)
+                        
+                        # Extract agent name from aggregate_id or event data
+                        agent_name = agent_id.split('-')[0] if '-' in agent_id else 'unknown'
+                        
+                        workflow_agents.append({
+                            'agent_id': agent_id,
+                            'agent_name': agent_name,
+                            'workflow_id': workflow_id,
+                            'first_event_time': event_dict.get('timestamp'),
+                            'event_type': event_dict.get('event_type')
+                        })
+            
+            # Sort by first event time
+            workflow_agents.sort(key=lambda x: x.get('first_event_time', ''))
+            
+            return workflow_agents
+            
+        except Exception as e:
+            print(f"Error retrieving workflow agents: {e}")
             return []
 
 
