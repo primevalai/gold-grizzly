@@ -17,6 +17,10 @@ router = APIRouter(prefix="/events", tags=["events"])
 class GenericEvent(Event):
     """Generic event for storing arbitrary event data."""
     
+    # Add custom fields as Pydantic model fields
+    name: str = ""
+    attributes: Dict[str, Any] = {}
+    
     @classmethod
     def get_event_type(cls) -> str:
         return "generic_event"
@@ -28,13 +32,15 @@ class EventAggregate(Aggregate):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
     
-    def add_event(self, event_type: str) -> None:
+    def add_event(self, event_type: str, event_data: Dict[str, Any] = None) -> None:
         """Add a new event to this aggregate."""
         event = GenericEvent(
             event_id=str(uuid.uuid4()),
             aggregate_id=self.id,
             aggregate_type=self.get_aggregate_type(),
-            event_type=event_type
+            event_type=event_type,
+            name=event_data.get("name", "") if event_data else "",
+            attributes=event_data.get("attributes", {}) if event_data else {}
         )
         self.apply(event)
     
@@ -76,7 +82,7 @@ async def create_event(
         # Create aggregate and add event using proper DDD pattern
         aggregate_id = str(uuid.uuid4())
         aggregate = EventAggregate(id=aggregate_id)
-        aggregate.add_event(event_request.name)
+        aggregate.add_event(event_request.name, event_data)
         
         # Store aggregate in eventuali
         await store.save(aggregate)

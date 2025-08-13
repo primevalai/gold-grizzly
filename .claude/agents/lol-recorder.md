@@ -19,52 +19,34 @@ When activated, follow these steps:
 ### 1. ACKNOWLEDGE THE TRIGGER
 First, emit the momentTriggered event:
 ```bash
-uv run .claude/scripts/emit-event.py "lolRecorder.momentTriggered" \
-  --attr "trigger_phrase=<exact phrase>" \
-  --attr "trigger_words=[\"lol\", \"crazy\", etc]" \
-  --attr "humor_category=<category>" \
-  --attr "user_context=<brief context>"
+uv run .claude/scripts/emit-event.py "lolRecorder.momentTriggered" --attr "trigger_phrase=<exact phrase>" --attr "trigger_words=[\"lol\", \"crazy\", etc]" --attr "humor_category=<category>" --attr "user_context=<brief context>"
 ```
 Then acknowledge the humor to the user.
 
 ### 2. GATHER CONTEXT
 Analyze the situation and collect comprehensive metadata, then emit:
 ```bash
-uv run .claude/scripts/emit-event.py "lolRecorder.contextGathered" \
-  --attr "conversation_turns=<number>" \
-  --attr "technical_context_available=true/false" \
-  --attr "project_context_available=true/false" \
-  --attr "metadata_fields_collected=<number>"
+uv run .claude/scripts/emit-event.py "lolRecorder.contextGathered" --attr "conversation_turns=<number>" --attr "technical_context_available=true/false" --attr "project_context_available=true/false" --attr "metadata_fields_collected=<number>"
 ```
 
 ### 3. PREPARE STORAGE
 Check/create the .lol-agent folder:
 ```bash
 mkdir -p .lol-agent
-uv run .claude/scripts/emit-event.py "lolRecorder.folderCreated" \
-  --attr "folder_path=.lol-agent" \
-  --attr "already_existed=true/false"
+uv run .claude/scripts/emit-event.py "lolRecorder.folderCreated" --attr "folder_path=.lol-agent" --attr "already_existed=true/false"
 ```
 
 ### 4. DOCUMENT THE MOMENT
 Create the comprehensive JSON document with all metadata and save it:
 ```bash
 # After saving the JSON file with Write tool
-uv run .claude/scripts/emit-event.py "lolRecorder.momentRecorded" \
-  --attr "file_path=<full path>" \
-  --attr "file_size=<bytes>" \
-  --attr "humor_category=<category>" \
-  --attr "trigger_phrase=<original phrase>"
+uv run .claude/scripts/emit-event.py "lolRecorder.momentRecorded" --attr "file_path=<full path>" --attr "file_size=<bytes>" --attr "humor_category=<category>" --attr "trigger_phrase=<original phrase>"
 ```
 
 ### 5. COMPLETE PRESERVATION
 Confirm to the user and emit final event:
 ```bash
-uv run .claude/scripts/emit-event.py "lolRecorder.preservationComplete" \
-  --attr "file_path=<full path>" \
-  --attr "preservation_note=<why preserved>" \
-  --attr "cultural_significance=<significance>" \
-  --attr "moment_classification=<classification>"
+uv run .claude/scripts/emit-event.py "lolRecorder.preservationComplete" --attr "file_path=<full path>" --attr "preservation_note=<why preserved>" --attr "cultural_significance=<significance>" --attr "moment_classification=<classification>"
 ```
 
 ## DOCUMENTATION REQUIREMENTS

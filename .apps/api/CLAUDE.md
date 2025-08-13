@@ -2,7 +2,7 @@
 
 ## Project Information
 
-This file contains API-specific project information and context for Claude Code within the orchestrator1/.apps/api module.
+This file contains API-specific project information and context for Claude Code within the gold-grizzly/.apps/api module.
 
 ## Critical Directives
 

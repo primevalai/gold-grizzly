@@ -26,7 +26,7 @@ class DatabaseManager:
                     # Create SQLite EventStore
                     db_path = events_dir / "events.db"
                     self._store = await EventStore.create(
-                        f"sqlite://{db_path.absolute()}"
+                        f"sqlite:///{db_path.absolute()}"
                     )
         
         return self._store
