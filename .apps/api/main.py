@@ -4,6 +4,7 @@ from contextlib import asynccontextmanager
 from typing import AsyncGenerator
 
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 
 from dependencies.database import db_manager
 from routes.events import router as events_router
@@ -23,6 +24,15 @@ app = FastAPI(
     description="FastAPI service for processing events with eventuali",
     version="0.1.0",
     lifespan=lifespan
+)
+
+# Configure CORS for UI integration
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://localhost:3000"],  # Next.js dev server
+    allow_credentials=True,
+    allow_methods=["GET", "POST", "PUT", "DELETE"],
+    allow_headers=["*"],
 )
 
 # Include routers
