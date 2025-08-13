@@ -21,33 +21,33 @@ trap cleanup SIGINT SIGTERM
 
 # Start API server
 echo "📡 Starting API server..."
-cd api
-uv run python -m uvicorn main:app --reload --host 127.0.0.1 --port 8000 &
+cd /home/user01/syncs/github/primevalai/gold-grizzly/.apps/api
+uv run python -m uvicorn main:app --reload --host 127.0.0.1 --port 8765 &
 API_PID=$!
-echo "   API running on http://localhost:8000 (PID: $API_PID)"
+echo "   API running on http://localhost:8765 (PID: $API_PID)"
 
 # Wait a moment for API to start
 sleep 2
 
 # Start UI server
 echo "🎨 Starting UI server..."
-cd ../ui
-bun dev &
+cd /home/user01/syncs/github/primevalai/gold-grizzly/.apps/ui
+bun run dev &
 UI_PID=$!
-echo "   UI running on http://localhost:3000 (PID: $UI_PID)"
+echo "   UI running on http://localhost:3210 (PID: $UI_PID)"
 
 echo ""
 echo "🎉 Both servers are starting up!"
 echo ""
 echo "📋 Available endpoints:"
-echo "   • UI Dashboard:    http://localhost:3000"
-echo "   • API Docs:        http://localhost:8000/docs"
-echo "   • API Health:      http://localhost:8000/health"
-echo "   • Event Stream:    http://localhost:8000/events/stream"
-echo "   • Create Event:    POST http://localhost:8000/events/"
+echo "   • UI Dashboard:    http://localhost:3210"
+echo "   • API Docs:        http://localhost:8765/docs"
+echo "   • API Health:      http://localhost:8765/health"
+echo "   • Event Stream:    http://localhost:8765/events/stream"
+echo "   • Create Event:    POST http://localhost:8765/events/"
 echo ""
 echo "💡 Test the system:"
-echo "   curl -X POST http://localhost:8000/events/ \\"
+echo "   curl -X POST http://localhost:8765/events/ \\"
 echo "     -H 'Content-Type: application/json' \\"
 echo "     -d '{\"name\": \"test_event\", \"attributes\": {\"test\": true}}'"
 echo ""

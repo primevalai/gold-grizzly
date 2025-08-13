@@ -128,18 +128,13 @@ class AgentAggregate(Aggregate):
         self.status = "failed"
         self.end_time = event.attributes.get("end_time", "")
     
-    def apply_generic_agent_event(self, event: AgentEvent) -> None:
-        """Apply any agent event (for custom agent events)."""
-        # Update status to running if not already set
-        if self.status == "started":
-            self.status = "running"
-    
     def __getattr__(self, name: str):
-        """Dynamically handle apply methods for any agent event type."""
+        """Handle any apply method dynamically."""
         if name.startswith('apply_'):
-            # Return a generic handler for any apply method
-            return self.apply_generic_agent_event
+            # Return a simple generic handler that does nothing
+            return lambda event: None
         raise AttributeError(f"'{self.__class__.__name__}' object has no attribute '{name}'")
+    
     
     @classmethod
     def get_aggregate_type(cls) -> str:
@@ -384,7 +379,7 @@ async def create_event(
             
             # Check if aggregate exists, if not create it
             try:
-                aggregate = await store.load(event_request.aggregate_id)
+                aggregate = await store.load(AgentAggregate, event_request.aggregate_id)
                 if not aggregate or aggregate.get_aggregate_type() != "agent_aggregate":
                     # Create new agent aggregate
                     aggregate = AgentAggregate(id=event_request.aggregate_id)
@@ -417,7 +412,7 @@ async def create_event(
             
             # Check if aggregate exists, if not create it
             try:
-                aggregate = await store.load(event_request.correlation_id)
+                aggregate = await store.load(WorkflowAggregate, event_request.correlation_id)
                 if not aggregate or aggregate.get_aggregate_type() != "workflow_aggregate":
                     aggregate = WorkflowAggregate(id=event_request.correlation_id)
             except:
@@ -443,7 +438,7 @@ async def create_event(
             
             # Check if aggregate exists, if not create it
             try:
-                aggregate = await store.load(aggregate_id)
+                aggregate = await store.load(SystemAggregate, aggregate_id)
                 if not aggregate or aggregate.get_aggregate_type() != "system_aggregate":
                     aggregate = SystemAggregate(id=aggregate_id)
             except:
