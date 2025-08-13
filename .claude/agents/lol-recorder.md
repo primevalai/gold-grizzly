@@ -16,49 +16,74 @@ This agent follows the new three-aggregate event system. Each agent instance cre
 
 When activated, follow these steps:
 
-### 1. INITIALIZE AGENT INSTANCE
-First, generate a unique agent ID and create the workflow context:
+### 1. EXTRACT AGENT CONTEXT
+First, extract the provided context IDs from the prompt (Claude Code provides these):
 ```bash
-# Generate unique agent ID (use uuid or timestamp-based ID)
-AGENT_ID="lolRecorder-$(date +%s)-$(uuidgen | cut -d- -f1)"
-WORKFLOW_ID="${WORKFLOW_ID:-$(uuidgen)}"  # Use existing workflow or create new one
+# Extract AGENT_ID and WORKFLOW_ID from the ===AGENT_CONTEXT=== block
+# The prompt will contain:
+# ===AGENT_CONTEXT===
+# AGENT_ID: lolRecorder-1755117908-a3f2b1c8
+# WORKFLOW_ID: 550e8400-e29b-41d4-a716-446655440000
+# PARENT: main-claude-code
+# TIMESTAMP: 2025-08-13T15:45:08Z
+# ===END_CONTEXT===
+
+# Extract the IDs (these will be used consistently across all bash executions)
+AGENT_ID="lolRecorder-1755117908-a3f2b1c8"  # Replace with actual extracted value
+WORKFLOW_ID="550e8400-e29b-41d4-a716-446655440000"  # Replace with actual extracted value
+
+# Extract trigger information from the prompt
+TRIGGER_PHRASE="This is ridiculous!"  # Replace with actual extracted phrase
+HUMOR_CATEGORY="bug_frustration"  # Analyze and categorize
 
 # Start the agent instance
 uv run .claude/scripts/emit-event.py "agent.lolRecorder.started" \
   --aggregate-id "$AGENT_ID" \
   --correlation-id "$WORKFLOW_ID" \
-  --attr "trigger_phrase=<exact phrase>" \
-  --attr "trigger_words=[\"lol\", \"crazy\", etc]" \
-  --attr "humor_category=<category>" \
-  --attr "user_context=<brief context>"
+  --attr "trigger_phrase=$TRIGGER_PHRASE" \
+  --attr "trigger_words=[\"ridiculous\"]" \
+  --attr "humor_category=$HUMOR_CATEGORY" \
+  --attr "user_context=User expressing frustration/amusement"
 ```
 
 ### 2. GATHER CONTEXT
 Analyze the situation and collect comprehensive metadata:
 ```bash
+# Use the same extracted IDs
+AGENT_ID="lolRecorder-1755117908-a3f2b1c8"  # Same as extracted above
+WORKFLOW_ID="550e8400-e29b-41d4-a716-446655440000"  # Same as extracted above
+
 uv run .claude/scripts/emit-event.py "agent.lolRecorder.contextGathered" \
   --aggregate-id "$AGENT_ID" \
   --correlation-id "$WORKFLOW_ID" \
-  --attr "conversation_turns=<number>" \
-  --attr "technical_context_available=true/false" \
-  --attr "project_context_available=true/false" \
-  --attr "metadata_fields_collected=<number>"
+  --attr "conversation_turns=1" \
+  --attr "technical_context_available=true" \
+  --attr "project_context_available=true" \
+  --attr "metadata_fields_collected=15"
 ```
 
 ### 3. PREPARE STORAGE
 Check/create the .lol-agent folder:
 ```bash
+# Use the same extracted IDs
+AGENT_ID="lolRecorder-1755117908-a3f2b1c8"  # Same as extracted above
+WORKFLOW_ID="550e8400-e29b-41d4-a716-446655440000"  # Same as extracted above
+
 mkdir -p .lol-agent
 uv run .claude/scripts/emit-event.py "agent.lolRecorder.folderCreated" \
   --aggregate-id "$AGENT_ID" \
   --correlation-id "$WORKFLOW_ID" \
   --attr "folder_path=.lol-agent" \
-  --attr "already_existed=true/false"
+  --attr "already_existed=true"
 ```
 
 ### 4. DOCUMENT THE MOMENT
 Create the comprehensive JSON document with all metadata and save it:
 ```bash
+# Use the same extracted IDs
+AGENT_ID="lolRecorder-1755117908-a3f2b1c8"  # Same as extracted above
+WORKFLOW_ID="550e8400-e29b-41d4-a716-446655440000"  # Same as extracted above
+
 # After saving the JSON file with Write tool
 uv run .claude/scripts/emit-event.py "agent.lolRecorder.momentRecorded" \
   --aggregate-id "$AGENT_ID" \
@@ -72,6 +97,9 @@ uv run .claude/scripts/emit-event.py "agent.lolRecorder.momentRecorded" \
 ### 5. COMPLETE PRESERVATION
 Confirm to the user and emit final event:
 ```bash
+# Use the same extracted IDs
+AGENT_ID="lolRecorder-1755117908-a3f2b1c8"  # Same as extracted above
+WORKFLOW_ID="550e8400-e29b-41d4-a716-446655440000"  # Same as extracted above
 uv run .claude/scripts/emit-event.py "agent.lolRecorder.completed" \
   --aggregate-id "$AGENT_ID" \
   --correlation-id "$WORKFLOW_ID" \
@@ -81,6 +109,19 @@ uv run .claude/scripts/emit-event.py "agent.lolRecorder.completed" \
   --attr "moment_classification=<classification>" \
   --attr "success=true"
 ```
+
+## IMPORTANT: CONTEXT EXTRACTION REQUIREMENT
+
+**CRITICAL**: The AGENT_ID and WORKFLOW_ID values shown above are examples. You MUST extract the actual values from the ===AGENT_CONTEXT=== block in your prompt. Claude Code will provide unique IDs for each invocation.
+
+**Pattern to extract IDs:**
+```bash
+# Parse the context block to get actual IDs
+AGENT_ID=$(echo "$PROMPT" | grep "AGENT_ID:" | cut -d' ' -f2)
+WORKFLOW_ID=$(echo "$PROMPT" | grep "WORKFLOW_ID:" | cut -d' ' -f2)
+```
+
+**These IDs must be identical across ALL bash executions within this agent.**
 
 ## AGENT CONTEXT PROPAGATION
 

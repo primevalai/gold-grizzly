@@ -35,43 +35,116 @@ Include this execution flow template and customize the event names and attribute
 
 When activated, follow these steps:
 
-### 1. ACKNOWLEDGE ACTIVATION
-First, emit the activation event:
+### 1. EXTRACT AGENT CONTEXT
+**CRITICAL FIRST STEP**: Extract the provided context IDs from the prompt:
 ```bash
-uv run .claude/scripts/emit-event.py "[agentName].activated" --attr "trigger_context=<context>" --attr "activation_reason=<reason>"
+# Extract AGENT_ID and WORKFLOW_ID from the ===AGENT_CONTEXT=== block
+# The prompt will contain:
+# ===AGENT_CONTEXT===
+# AGENT_ID: [agentName]-1755117908-a3f2b1c8
+# WORKFLOW_ID: 550e8400-e29b-41d4-a716-446655440000
+# PARENT: main-claude-code
+# TIMESTAMP: 2025-08-13T15:45:08Z
+# ===END_CONTEXT===
+
+# Extract the IDs (these will be used consistently across all bash executions)
+AGENT_ID="[agentName]-1755117908-a3f2b1c8"  # Replace with actual extracted value
+WORKFLOW_ID="550e8400-e29b-41d4-a716-446655440000"  # Replace with actual extracted value
+
+# Emit activation event
+uv run .claude/scripts/emit-event.py "agent.[agentName].activated" \
+  --aggregate-id "$AGENT_ID" \
+  --correlation-id "$WORKFLOW_ID" \
+  --attr "trigger_context=<context>" \
+  --attr "activation_reason=<reason>"
 ```
-Then acknowledge the task to the user.
 
 ### 2. GATHER REQUIREMENTS
-Analyze the situation and collect necessary information, then emit:
+Analyze the situation and collect necessary information:
 ```bash
-uv run .claude/scripts/emit-event.py "[agentName].requirementsGathered" --attr "requirements_count=<number>" --attr "complexity_level=<simple|medium|complex>" --attr "estimated_steps=<number>"
+# Use the same extracted IDs
+AGENT_ID="[agentName]-1755117908-a3f2b1c8"  # Same as extracted above
+WORKFLOW_ID="550e8400-e29b-41d4-a716-446655440000"  # Same as extracted above
+
+uv run .claude/scripts/emit-event.py "agent.[agentName].requirementsGathered" \
+  --aggregate-id "$AGENT_ID" \
+  --correlation-id "$WORKFLOW_ID" \
+  --attr "requirements_count=<number>" \
+  --attr "complexity_level=<simple|medium|complex>" \
+  --attr "estimated_steps=<number>"
 ```
 
 ### 3. PREPARE ENVIRONMENT
 Set up any necessary folders or check dependencies:
 ```bash
-uv run .claude/scripts/emit-event.py "[agentName].environmentPrepared" --attr "setup_required=true/false" --attr "dependencies_checked=true/false"
+# Use the same extracted IDs
+AGENT_ID="[agentName]-1755117908-a3f2b1c8"  # Same as extracted above
+WORKFLOW_ID="550e8400-e29b-41d4-a716-446655440000"  # Same as extracted above
+
+uv run .claude/scripts/emit-event.py "agent.[agentName].environmentPrepared" \
+  --aggregate-id "$AGENT_ID" \
+  --correlation-id "$WORKFLOW_ID" \
+  --attr "setup_required=true/false" \
+  --attr "dependencies_checked=true/false"
 ```
 
 ### 4. EXECUTE MAIN TASK
 Perform the core functionality and emit progress events:
 ```bash
+# Use the same extracted IDs
+AGENT_ID="[agentName]-1755117908-a3f2b1c8"  # Same as extracted above
+WORKFLOW_ID="550e8400-e29b-41d4-a716-446655440000"  # Same as extracted above
+
 # At start of main work
-uv run .claude/scripts/emit-event.py "[agentName].workStarted" --attr "task_type=<type>" --attr "expected_duration=<estimate>"
+uv run .claude/scripts/emit-event.py "agent.[agentName].workStarted" \
+  --aggregate-id "$AGENT_ID" \
+  --correlation-id "$WORKFLOW_ID" \
+  --attr "task_type=<type>" \
+  --attr "expected_duration=<estimate>"
 
 # During key milestones
-uv run .claude/scripts/emit-event.py "[agentName].milestoneReached" --attr "milestone=<description>" --attr "progress_percentage=<0-100>"
+uv run .claude/scripts/emit-event.py "agent.[agentName].milestoneReached" \
+  --aggregate-id "$AGENT_ID" \
+  --correlation-id "$WORKFLOW_ID" \
+  --attr "milestone=<description>" \
+  --attr "progress_percentage=<0-100>"
 
 # After completion
-uv run .claude/scripts/emit-event.py "[agentName].workCompleted" --attr "success=true/false" --attr "output_path=<path>" --attr "completion_notes=<notes>"
+uv run .claude/scripts/emit-event.py "agent.[agentName].workCompleted" \
+  --aggregate-id "$AGENT_ID" \
+  --correlation-id "$WORKFLOW_ID" \
+  --attr "success=true/false" \
+  --attr "output_path=<path>" \
+  --attr "completion_notes=<notes>"
 ```
 
 ### 5. FINALIZE AND REPORT
 Confirm completion to the user and emit final event:
 ```bash
-uv run .claude/scripts/emit-event.py "[agentName].sessionComplete" --attr "total_duration=<time>" --attr "final_status=<status>" --attr "artifacts_created=<list>"
+# Use the same extracted IDs
+AGENT_ID="[agentName]-1755117908-a3f2b1c8"  # Same as extracted above
+WORKFLOW_ID="550e8400-e29b-41d4-a716-446655440000"  # Same as extracted above
+
+uv run .claude/scripts/emit-event.py "agent.[agentName].completed" \
+  --aggregate-id "$AGENT_ID" \
+  --correlation-id "$WORKFLOW_ID" \
+  --attr "total_duration=<time>" \
+  --attr "final_status=<status>" \
+  --attr "artifacts_created=<list>"
 ```
+
+## IMPORTANT: CONTEXT EXTRACTION REQUIREMENT
+
+**CRITICAL**: The AGENT_ID and WORKFLOW_ID values shown above are examples. You MUST extract the actual values from the ===AGENT_CONTEXT=== block in your prompt. Claude Code will provide unique IDs for each invocation.
+
+**Pattern to extract IDs:**
+```bash
+# Parse the context block to get actual IDs
+AGENT_ID=$(echo "$PROMPT" | grep "AGENT_ID:" | cut -d' ' -f2)
+WORKFLOW_ID=$(echo "$PROMPT" | grep "WORKFLOW_ID:" | cut -d' ' -f2)
+```
+
+**These IDs must be identical across ALL bash executions within this agent.**
 ```
 
 ## Event Naming Convention

@@ -25,83 +25,134 @@ This agent follows the new three-aggregate event system. Each agent instance cre
 
 **Operational Workflow**:
 
-1. **Initialize Agent Instance**:
+1. **Extract Agent Context**:
 ```bash
-# Generate unique agent ID and workflow context
-AGENT_ID="urlCacher-$(date +%s)-$(uuidgen | cut -d- -f1)"
-WORKFLOW_ID="${WORKFLOW_ID:-$(uuidgen)}"
+# Extract AGENT_ID and WORKFLOW_ID from the ===AGENT_CONTEXT=== block
+# The prompt will contain:
+# ===AGENT_CONTEXT===
+# AGENT_ID: urlCacher-1755117908-a3f2b1c8
+# WORKFLOW_ID: 550e8400-e29b-41d4-a716-446655440000
+# PARENT: main-claude-code
+# TIMESTAMP: 2025-08-13T15:45:08Z
+# ===END_CONTEXT===
+
+# Extract the IDs (these will be used consistently across all bash executions)
+AGENT_ID="urlCacher-1755117908-a3f2b1c8"  # Replace with actual extracted value
+WORKFLOW_ID="550e8400-e29b-41d4-a716-446655440000"  # Replace with actual extracted value
+
+# Extract URL from the prompt
+TARGET_URL="https://docs.anthropic.com/en/docs/claude-code"  # Replace with actual extracted URL
 
 # Start agent and publish cache request
 uv run .claude/scripts/emit-event.py "agent.urlCacher.started" \
   --aggregate-id "$AGENT_ID" \
   --correlation-id "$WORKFLOW_ID" \
-  --attr "url=<target_url>" \
+  --attr "url=$TARGET_URL" \
   --attr "operation=cache_requested"
 ```
 
 2. **Validate URL**:
 ```bash
+# Use the same extracted IDs
+AGENT_ID="urlCacher-1755117908-a3f2b1c8"  # Same as extracted above
+WORKFLOW_ID="550e8400-e29b-41d4-a716-446655440000"  # Same as extracted above
+TARGET_URL="https://docs.anthropic.com/en/docs/claude-code"  # Same as extracted above
+
 # After URL validation
 uv run .claude/scripts/emit-event.py "agent.urlCacher.urlValidated" \
   --aggregate-id "$AGENT_ID" \
   --correlation-id "$WORKFLOW_ID" \
-  --attr "url=<validated_url>" \
-  --attr "domain=<extracted_domain>" \
-  --attr "path_segments=<path_array>"
+  --attr "url=$TARGET_URL" \
+  --attr "domain=$(echo $TARGET_URL | cut -d'/' -f3)" \
+  --attr "path_segments=/en/docs/claude-code"
 ```
 
 3. **Check Cache Status**:
 ```bash
+# Use the same extracted IDs
+AGENT_ID="urlCacher-1755117908-a3f2b1c8"  # Same as extracted above
+WORKFLOW_ID="550e8400-e29b-41d4-a716-446655440000"  # Same as extracted above
+
 # Start cache freshness check
 uv run .claude/scripts/emit-event.py "agent.urlCacher.cacheCheckStarted" \
   --aggregate-id "$AGENT_ID" \
   --correlation-id "$WORKFLOW_ID" \
-  --attr "cache_path=<cache_directory>"
+  --attr "cache_path=.metadata/cache/docs-anthropic-com/en/docs/claude-code"
 ```
 
 4. **Handle Cache Results**:
 
 For already cached content:
 ```bash
+# Use the same extracted IDs
+AGENT_ID="urlCacher-1755117908-a3f2b1c8"  # Same as extracted above
+WORKFLOW_ID="550e8400-e29b-41d4-a716-446655440000"  # Same as extracted above
+
 uv run .claude/scripts/emit-event.py "agent.urlCacher.alreadyCached" \
   --aggregate-id "$AGENT_ID" \
   --correlation-id "$WORKFLOW_ID" \
-  --attr "cache_path=<path>" \
-  --attr "last_updated=<timestamp>" \
-  --attr "freshness_hours=<hours_old>"
+  --attr "cache_path=.metadata/cache/docs-anthropic-com/en/docs/claude-code" \
+  --attr "last_updated=2025-08-13T10:30:00Z" \
+  --attr "freshness_hours=5"
 ```
 
 For download needed:
 ```bash
+# Use the same extracted IDs
+AGENT_ID="urlCacher-1755117908-a3f2b1c8"  # Same as extracted above
+WORKFLOW_ID="550e8400-e29b-41d4-a716-446655440000"  # Same as extracted above
+TARGET_URL="https://docs.anthropic.com/en/docs/claude-code"  # Same as extracted above
+
 uv run .claude/scripts/emit-event.py "agent.urlCacher.downloadStarted" \
   --aggregate-id "$AGENT_ID" \
   --correlation-id "$WORKFLOW_ID" \
-  --attr "url=<target_url>" \
-  --attr "reason=<expired|new>"
+  --attr "url=$TARGET_URL" \
+  --attr "reason=expired"
 ```
 
 5. **Complete Operation**:
 
 On success:
 ```bash
+# Use the same extracted IDs
+AGENT_ID="urlCacher-1755117908-a3f2b1c8"  # Same as extracted above
+WORKFLOW_ID="550e8400-e29b-41d4-a716-446655440000"  # Same as extracted above
+
 uv run .claude/scripts/emit-event.py "agent.urlCacher.completed" \
   --aggregate-id "$AGENT_ID" \
   --correlation-id "$WORKFLOW_ID" \
   --attr "success=true" \
-  --attr "cache_path=<final_path>" \
-  --attr "content_size=<bytes>" \
-  --attr "operation_result=<urlCached|urlAlreadyCached>"
+  --attr "cache_path=.metadata/cache/docs-anthropic-com/en/docs/claude-code" \
+  --attr "content_size=45672" \
+  --attr "operation_result=urlCached"
 ```
 
 On failure:
 ```bash
+# Use the same extracted IDs
+AGENT_ID="urlCacher-1755117908-a3f2b1c8"  # Same as extracted above
+WORKFLOW_ID="550e8400-e29b-41d4-a716-446655440000"  # Same as extracted above
+
 uv run .claude/scripts/emit-event.py "agent.urlCacher.completed" \
   --aggregate-id "$AGENT_ID" \
   --correlation-id "$WORKFLOW_ID" \
   --attr "success=false" \
-  --attr "error=<error_message>" \
+  --attr "error=Network timeout after 30 seconds" \
   --attr "operation_result=urlCacheFailed"
 ```
+
+## IMPORTANT: CONTEXT EXTRACTION REQUIREMENT
+
+**CRITICAL**: The AGENT_ID and WORKFLOW_ID values shown above are examples. You MUST extract the actual values from the ===AGENT_CONTEXT=== block in your prompt. Claude Code will provide unique IDs for each invocation.
+
+**Pattern to extract IDs:**
+```bash
+# Parse the context block to get actual IDs
+AGENT_ID=$(echo "$PROMPT" | grep "AGENT_ID:" | cut -d' ' -f2)
+WORKFLOW_ID=$(echo "$PROMPT" | grep "WORKFLOW_ID:" | cut -d' ' -f2)
+```
+
+**These IDs must be identical across ALL bash executions within this agent.**
 
 **URL-to-Path Conversion Rules**:
 - Convert domain to kebab-case slug (e.g., 'docs.anthropic.com' → 'docs-anthropic-com')

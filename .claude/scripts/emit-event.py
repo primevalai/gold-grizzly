@@ -115,7 +115,9 @@ def validate_event_name(event_name: str) -> None:
 
 def main():
     if len(sys.argv) < 2:
-        print("Usage: python3 emit-event.py <event_name> [options]", file=sys.stderr)
+        print("ERROR: emit-event.py called without parameters", file=sys.stderr)
+        print("", file=sys.stderr)
+        print("Usage: uv run .claude/scripts/emit-event.py <event_name> [options]", file=sys.stderr)
         print("Options:")
         print("  --attr key=value      Event attributes (can be used multiple times)")
         print("  --aggregate-id ID     Aggregate ID (required for agent events)")
@@ -126,6 +128,15 @@ def main():
         print("  agent.<agentName>.<eventName>  - Agent lifecycle and actions")
         print("  workflow.<eventName>           - Workflow lifecycle")
         print("  system.<eventName>             - System-level events")
+        print("", file=sys.stderr)
+        
+        # Check if this might be an auto-spawn scenario
+        if not sys.stdin.isatty():
+            print("INFO: Non-interactive context detected", file=sys.stderr)
+            print("INFO: This may be Claude Code auto-spawning the script incorrectly", file=sys.stderr)
+            print("INFO: Agents should extract AGENT_ID from ===AGENT_CONTEXT=== blocks", file=sys.stderr)
+            print("INFO: Check CLAUDE.md for proper agent invocation protocol", file=sys.stderr)
+        
         sys.exit(1)
     
     event_name = sys.argv[1]
@@ -164,15 +175,26 @@ def main():
             i += 1
     
     # Additional validation based on event type
-    if event_name.startswith("agent.") and not aggregate_id:
-        print("ERROR: Agent events require --aggregate-id parameter", file=sys.stderr)
-        print(f"Event: {event_name}", file=sys.stderr)
-        sys.exit(1)
+    if event_name.startswith("agent."):
+        if not aggregate_id or aggregate_id.strip() == "":
+            print("ERROR: Agent events require --aggregate-id parameter with non-empty value", file=sys.stderr)
+            print(f"Event: {event_name}", file=sys.stderr)
+            print("HELP: Ensure AGENT_ID is extracted from ===AGENT_CONTEXT=== block in agent prompt", file=sys.stderr)
+            print("HELP: Check that Claude Code provided proper context when invoking this agent", file=sys.stderr)
+            
+            # Check if this might be an auto-spawn scenario
+            if not sys.stdin.isatty():
+                print("INFO: Non-interactive context detected - possible auto-spawn by Claude Code", file=sys.stderr)
+                print("INFO: This script should be called with proper parameters by agents", file=sys.stderr)
+            
+            sys.exit(1)
     
-    if event_name.startswith("workflow.") and not correlation_id:
-        print("ERROR: Workflow events require --correlation-id parameter", file=sys.stderr)
-        print(f"Event: {event_name}", file=sys.stderr)
-        sys.exit(1)
+    if event_name.startswith("workflow."):
+        if not correlation_id or correlation_id.strip() == "":
+            print("ERROR: Workflow events require --correlation-id parameter with non-empty value", file=sys.stderr)
+            print(f"Event: {event_name}", file=sys.stderr)
+            print("HELP: Ensure WORKFLOW_ID is extracted from ===AGENT_CONTEXT=== block in agent prompt", file=sys.stderr)
+            sys.exit(1)
     
     # Create event with timestamp
     timestamp = datetime.now(timezone.utc).isoformat()

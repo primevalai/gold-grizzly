@@ -1,47 +1,47 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
-  --card: #ffffff;
-  --card-foreground: #171717;
-  --primary: #171717;
-  --primary-foreground: #fafafa;
-  --secondary: #f5f5f5;
-  --secondary-foreground: #171717;
-  --muted: #f5f5f5;
-  --muted-foreground: #737373;
-  --accent: #f5f5f5;
-  --accent-foreground: #171717;
-  --destructive: #dc2626;
-  --destructive-foreground: #fafafa;
-  --border: #e5e5e5;
-  --input: #e5e5e5;
-  --ring: #171717;
+  --background: 45 15 98;
+  --foreground: 30 30 24;
+  --card: 45 15 98;
+  --card-foreground: 30 30 24;
+  --primary: 45 85 37;
+  --primary-foreground: 45 15 98;
+  --secondary: 45 15 94;
+  --secondary-foreground: 30 30 24;
+  --muted: 45 15 94;
+  --muted-foreground: 30 20 50;
+  --accent: 51 83 54;
+  --accent-foreground: 30 30 24;
+  --destructive: 0 84 60;
+  --destructive-foreground: 45 15 98;
+  --border: 45 15 87;
+  --input: 45 15 87;
+  --ring: 45 85 37;
   --radius: 0.5rem;
 }
 
 .dark {
-  --background: #0a0a0a;
-  --foreground: #fafafa;
-  --card: #0a0a0a;
-  --card-foreground: #fafafa;
-  --primary: #fafafa;
-  --primary-foreground: #171717;
-  --secondary: #262626;
-  --secondary-foreground: #fafafa;
-  --muted: #262626;
-  --muted-foreground: #a3a3a3;
-  --accent: #262626;
-  --accent-foreground: #fafafa;
-  --destructive: #dc2626;
-  --destructive-foreground: #fafafa;
-  --border: #262626;
-  --input: #262626;
-  --ring: #d4d4d8;
+  --background: 30 22 9;
+  --foreground: 45 15 94;
+  --card: 30 22 9;
+  --card-foreground: 45 15 94;
+  --primary: 51 83 54;
+  --primary-foreground: 30 22 9;
+  --secondary: 30 22 14;
+  --secondary-foreground: 45 15 94;
+  --muted: 30 22 14;
+  --muted-foreground: 30 15 65;
+  --accent: 45 85 37;
+  --accent-foreground: 45 15 94;
+  --destructive: 0 84 60;
+  --destructive-foreground: 45 15 94;
+  --border: 30 22 14;
+  --input: 30 22 14;
+  --ring: 51 83 54;
 }
 
 body {
-  background-color: var(--background);
-  color: var(--foreground);
+  background-color: hsl(var(--background));
+  color: hsl(var(--foreground));
 }

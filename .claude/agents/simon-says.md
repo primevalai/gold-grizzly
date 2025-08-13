@@ -16,39 +16,61 @@ This agent follows the three-aggregate event system. Each agent instance creates
 
 When activated, follow these steps:
 
-### 1. INITIALIZE AGENT INSTANCE
-First, generate a unique agent ID and create the workflow context:
+### 1. EXTRACT AGENT CONTEXT
+First, extract the provided context IDs from the prompt (Claude Code provides these):
 ```bash
-# Generate unique agent ID (use uuid or timestamp-based ID)
-AGENT_ID="simonSays-$(date +%s)-$(uuidgen | cut -d- -f1)"
-WORKFLOW_ID="${WORKFLOW_ID:-$(uuidgen)}"  # Use existing workflow or create new one
+# Extract AGENT_ID and WORKFLOW_ID from the ===AGENT_CONTEXT=== block
+# The prompt will contain:
+# ===AGENT_CONTEXT===
+# AGENT_ID: simonSays-1755117908-a3f2b1c8
+# WORKFLOW_ID: 550e8400-e29b-41d4-a716-446655440000
+# PARENT: main-claude-code
+# TIMESTAMP: 2025-08-13T15:45:08Z
+# ===END_CONTEXT===
+
+# Extract the IDs (these will be used consistently across all bash executions)
+AGENT_ID="simonSays-1755117908-a3f2b1c8"  # Replace with actual extracted value
+WORKFLOW_ID="550e8400-e29b-41d4-a716-446655440000"  # Replace with actual extracted value
+
+# Extract the Simon command from the prompt
+SIMON_COMMAND="create a test file"  # Replace with actual extracted command
 
 # Start the agent instance
 uv run .claude/scripts/emit-event.py "agent.simonSays.started" \
   --aggregate-id "$AGENT_ID" \
   --correlation-id "$WORKFLOW_ID" \
-  --attr "command_received=<command after 'Simon says'>" \
-  --attr "user_prompt=<full original prompt>"
+  --attr "command_received=$SIMON_COMMAND" \
+  --attr "user_prompt=Simon says $SIMON_COMMAND"
 ```
 
 ### 2. EXTRACT AND LOG COMMAND
 Analyze the command and emit tracking event:
 ```bash
+# Use the same extracted IDs
+AGENT_ID="simonSays-1755117908-a3f2b1c8"  # Same as extracted above
+WORKFLOW_ID="550e8400-e29b-41d4-a716-446655440000"  # Same as extracted above
+SIMON_COMMAND="create a test file"  # Same as extracted above
+
 uv run .claude/scripts/emit-event.py "agent.simonSays.commandReceived" \
   --aggregate-id "$AGENT_ID" \
   --correlation-id "$WORKFLOW_ID" \
-  --attr "simon_command=<extracted command>" \
-  --attr "command_length=<number of characters>" \
-  --attr "timestamp=<current time>"
+  --attr "simon_command=$SIMON_COMMAND" \
+  --attr "command_length=${#SIMON_COMMAND}" \
+  --attr "timestamp=$(date -Iseconds)"
 ```
 
 ### 3. SIMULATE EXECUTION
 Mark the command as "executed":
 ```bash
+# Use the same extracted IDs
+AGENT_ID="simonSays-1755117908-a3f2b1c8"  # Same as extracted above
+WORKFLOW_ID="550e8400-e29b-41d4-a716-446655440000"  # Same as extracted above
+SIMON_COMMAND="create a test file"  # Same as extracted above
+
 uv run .claude/scripts/emit-event.py "agent.simonSays.executed" \
   --aggregate-id "$AGENT_ID" \
   --correlation-id "$WORKFLOW_ID" \
-  --attr "command=<the command>" \
+  --attr "command=$SIMON_COMMAND" \
   --attr "execution_status=simulated" \
   --attr "response_ready=true"
 ```
@@ -56,6 +78,10 @@ uv run .claude/scripts/emit-event.py "agent.simonSays.executed" \
 ### 4. COMPLETE AND RESPOND
 Finalize the agent execution:
 ```bash
+# Use the same extracted IDs
+AGENT_ID="simonSays-1755117908-a3f2b1c8"  # Same as extracted above
+WORKFLOW_ID="550e8400-e29b-41d4-a716-446655440000"  # Same as extracted above
+
 uv run .claude/scripts/emit-event.py "agent.simonSays.completed" \
   --aggregate-id "$AGENT_ID" \
   --correlation-id "$WORKFLOW_ID" \
@@ -63,6 +89,19 @@ uv run .claude/scripts/emit-event.py "agent.simonSays.completed" \
   --attr "response_sent=true" \
   --attr "agent_session_complete=true"
 ```
+
+## IMPORTANT: CONTEXT EXTRACTION REQUIREMENT
+
+**CRITICAL**: The AGENT_ID and WORKFLOW_ID values shown above are examples. You MUST extract the actual values from the ===AGENT_CONTEXT=== block in your prompt. Claude Code will provide unique IDs for each invocation.
+
+**Pattern to extract IDs:**
+```bash
+# Parse the context block to get actual IDs
+AGENT_ID=$(echo "$PROMPT" | grep "AGENT_ID:" | cut -d' ' -f2)
+WORKFLOW_ID=$(echo "$PROMPT" | grep "WORKFLOW_ID:" | cut -d' ' -f2)
+```
+
+**These IDs must be identical across ALL bash executions within this agent.**
 
 ## AGENT CONTEXT PROPAGATION
 
