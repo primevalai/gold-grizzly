@@ -50,17 +50,43 @@ class DatabaseManager:
         try:
             # Load events from all aggregates if no specific type provided
             if aggregate_type:
-                events = await store.load_events_by_type(aggregate_type)
+                events = await asyncio.wait_for(
+                    store.load_events_by_type(aggregate_type), 
+                    timeout=10.0
+                )
             else:
-                # Load events from all three aggregate types
-                agent_events = await store.load_events_by_type("agent_aggregate")
-                workflow_events = await store.load_events_by_type("workflow_aggregate") 
-                system_events = await store.load_events_by_type("system_aggregate")
-                # Also include legacy events for compatibility
-                legacy_events = await store.load_events_by_type("event_aggregate")
+                # Load events from all three aggregate types with timeout
+                agent_events_task = store.load_events_by_type("agent_aggregate")
+                workflow_events_task = store.load_events_by_type("workflow_aggregate") 
+                system_events_task = store.load_events_by_type("system_aggregate")
+                legacy_events_task = store.load_events_by_type("event_aggregate")
                 
-                # Combine all events
-                events = list(agent_events) + list(workflow_events) + list(system_events) + list(legacy_events)
+                try:
+                    # Execute all queries concurrently with timeout
+                    agent_events, workflow_events, system_events, legacy_events = await asyncio.wait_for(
+                        asyncio.gather(
+                            agent_events_task,
+                            workflow_events_task, 
+                            system_events_task,
+                            legacy_events_task,
+                            return_exceptions=True
+                        ),
+                        timeout=10.0
+                    )
+                    
+                    # Handle any exceptions from individual queries
+                    all_events = []
+                    for result in [agent_events, workflow_events, system_events, legacy_events]:
+                        if isinstance(result, Exception):
+                            print(f"Warning: Failed to load events from aggregate: {result}")
+                            continue
+                        all_events.extend(list(result))
+                    
+                    events = all_events
+                    
+                except asyncio.TimeoutError:
+                    print("Timeout loading events, falling back to direct database query")
+                    return []
             
             # Convert events to dictionaries and apply filtering
             event_dicts = []

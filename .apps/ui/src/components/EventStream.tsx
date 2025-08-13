@@ -16,7 +16,7 @@ interface EventStreamProps {
  * Main component that manages the event stream connection and displays events
  */
 export function EventStream({ 
-  apiUrl = 'http://localhost:8000' 
+  apiUrl = 'http://localhost:8765' 
 }: EventStreamProps) {
   const streamUrl = `${apiUrl}/events/stream`;
   const { 

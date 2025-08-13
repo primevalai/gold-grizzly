@@ -20,7 +20,7 @@
       "Modified command structure to use python module execution",
       "Finally achieved working startup script"
     ],
-    "final_solution": "#!/bin/bash\nset -e\necho \"Starting FastAPI application...\"\necho \"Server will be available at: http://localhost:8000\"\necho \"API docs available at: http://localhost:8000/docs\"\necho \"Press Ctrl+C to stop the server\"\necho \"\"\nuv run python -m uvicorn main:app --host 0.0.0.0 --port 8000 --reload",
+    "final_solution": "#!/bin/bash\nset -e\necho \"Starting FastAPI application...\"\necho \"Server will be available at: http://localhost:8765\"\necho \"API docs available at: http://localhost:8765/docs\"\necho \"Press Ctrl+C to stop the server\"\necho \"\"\nuv run python -m uvicorn main:app --host 0.0.0.0 --port 8765 --reload",
     "project_context": "FastAPI application with eventuali dependency, UV package manager, event orchestration system"
   },
   "conversation_context": "This occurred after a series of attempts to get the API server running properly. The user had been patient through multiple iterations of troubleshooting, making the final 'disaster' comment a perfect encapsulation of the developer experience.",

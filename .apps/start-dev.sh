@@ -21,9 +21,10 @@ trap cleanup SIGINT SIGTERM
 
 # Start API server
 echo "📡 Starting API server..."
-cd /home/user01/syncs/github/primevalai/gold-grizzly/.apps/api
+cd api
 uv run python -m uvicorn main:app --reload --host 127.0.0.1 --port 8765 &
 API_PID=$!
+cd ..
 echo "   API running on http://localhost:8765 (PID: $API_PID)"
 
 # Wait a moment for API to start
@@ -31,9 +32,10 @@ sleep 2
 
 # Start UI server
 echo "🎨 Starting UI server..."
-cd /home/user01/syncs/github/primevalai/gold-grizzly/.apps/ui
+cd ui
 bun run dev &
 UI_PID=$!
+cd ..
 echo "   UI running on http://localhost:3210 (PID: $UI_PID)"
 
 echo ""

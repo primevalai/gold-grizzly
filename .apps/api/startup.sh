@@ -28,8 +28,8 @@ echo -e "${BLUE}📦 Installing dependencies...${NC}"
 uv sync
 
 # Start the FastAPI development server
-echo -e "${GREEN}✅ Starting FastAPI server on http://127.0.0.1:8000${NC}"
-echo -e "${GREEN}📊 Health check: http://127.0.0.1:8000/health${NC}"
-echo -e "${GREEN}📚 API docs: http://127.0.0.1:8000/docs${NC}"
+echo -e "${GREEN}✅ Starting FastAPI server on http://127.0.0.1:8765${NC}"
+echo -e "${GREEN}📊 Health check: http://127.0.0.1:8765/health${NC}"
+echo -e "${GREEN}📚 API docs: http://127.0.0.1:8765/docs${NC}"
 
-uv run python -m uvicorn main:app --host 127.0.0.1 --port 8000 --reload
+uv run python -m uvicorn main:app --host 127.0.0.1 --port 8765 --reload

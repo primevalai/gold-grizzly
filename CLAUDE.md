@@ -9,6 +9,7 @@ This file contains project-specific information and context for Claude Code.
 <project-lexicon>
 **CC**: Claude Code
 **System**: The entirety of the contents of this Claude Code project
+**Event Telemetry**: The .apps/api and .apps/ui servers
 </project-lexicon>
 
 ## Critical Directives

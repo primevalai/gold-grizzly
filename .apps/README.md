@@ -18,8 +18,8 @@ Start both API and UI servers together:
 ```
 
 This will start:
-- API server on http://localhost:8000
-- UI dashboard on http://localhost:3000
+- API server on http://localhost:8765
+- UI dashboard on http://localhost:3210
 
 ### Individual Services
 
@@ -44,7 +44,7 @@ bun dev
 ### Create Events
 
 ```bash
-curl -X POST http://localhost:8000/events/ \
+curl -X POST http://localhost:8765/events/ \
   -H 'Content-Type: application/json' \
   -d '{
     "name": "user_signup",
@@ -57,14 +57,14 @@ curl -X POST http://localhost:8000/events/ \
 
 ### Monitor Events
 
-- Visit http://localhost:3000 for the real-time dashboard
+- Visit http://localhost:3210 for the real-time dashboard
 - Events will appear automatically via Server-Sent Events
 - Connection status and controls are provided in the UI
 
 ### API Documentation
 
-- Swagger UI: http://localhost:8000/docs
-- ReDoc: http://localhost:8000/redoc
+- Swagger UI: http://localhost:8765/docs
+- ReDoc: http://localhost:8765/redoc
 
 ## Technology Stack
 
