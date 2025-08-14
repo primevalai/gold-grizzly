@@ -30,15 +30,15 @@ This agent follows the new three-aggregate event system. Each agent instance cre
 # Extract AGENT_ID and WORKFLOW_ID from the ===AGENT_CONTEXT=== block
 # The prompt will contain:
 # ===AGENT_CONTEXT===
-# AGENT_ID: urlCacher-1755117908-a3f2b1c8
-# WORKFLOW_ID: 550e8400-e29b-41d4-a716-446655440000
+# AGENT_ID: urlCacher-0000000000-00000000
+# WORKFLOW_ID: 00000000-0000-0000-0000-000000000000
 # PARENT: main-claude-code
 # TIMESTAMP: 2025-08-13T15:45:08Z
 # ===END_CONTEXT===
 
 # Extract the IDs (these will be used consistently across all bash executions)
-AGENT_ID="urlCacher-1755117908-a3f2b1c8"  # Replace with actual extracted value
-WORKFLOW_ID="550e8400-e29b-41d4-a716-446655440000"  # Replace with actual extracted value
+AGENT_ID="urlCacher-0000000000-00000000"  # Replace with actual extracted value
+WORKFLOW_ID="00000000-0000-0000-0000-000000000000"  # Replace with actual extracted value
 
 # Extract URL from the prompt
 TARGET_URL="https://docs.anthropic.com/en/docs/claude-code"  # Replace with actual extracted URL
@@ -54,8 +54,8 @@ uv run .claude/scripts/emit-event.py "agent.urlCacher.started" \
 2. **Validate URL**:
 ```bash
 # Use the same extracted IDs
-AGENT_ID="urlCacher-1755117908-a3f2b1c8"  # Same as extracted above
-WORKFLOW_ID="550e8400-e29b-41d4-a716-446655440000"  # Same as extracted above
+AGENT_ID="urlCacher-0000000000-00000000"  # Same as extracted above
+WORKFLOW_ID="00000000-0000-0000-0000-000000000000"  # Same as extracted above
 TARGET_URL="https://docs.anthropic.com/en/docs/claude-code"  # Same as extracted above
 
 # After URL validation
@@ -70,8 +70,8 @@ uv run .claude/scripts/emit-event.py "agent.urlCacher.urlValidated" \
 3. **Check Cache Status**:
 ```bash
 # Use the same extracted IDs
-AGENT_ID="urlCacher-1755117908-a3f2b1c8"  # Same as extracted above
-WORKFLOW_ID="550e8400-e29b-41d4-a716-446655440000"  # Same as extracted above
+AGENT_ID="urlCacher-0000000000-00000000"  # Same as extracted above
+WORKFLOW_ID="00000000-0000-0000-0000-000000000000"  # Same as extracted above
 
 # Start cache freshness check
 uv run .claude/scripts/emit-event.py "agent.urlCacher.cacheCheckStarted" \
@@ -85,8 +85,8 @@ uv run .claude/scripts/emit-event.py "agent.urlCacher.cacheCheckStarted" \
 For already cached content:
 ```bash
 # Use the same extracted IDs
-AGENT_ID="urlCacher-1755117908-a3f2b1c8"  # Same as extracted above
-WORKFLOW_ID="550e8400-e29b-41d4-a716-446655440000"  # Same as extracted above
+AGENT_ID="urlCacher-0000000000-00000000"  # Same as extracted above
+WORKFLOW_ID="00000000-0000-0000-0000-000000000000"  # Same as extracted above
 
 uv run .claude/scripts/emit-event.py "agent.urlCacher.alreadyCached" \
   --aggregate-id "$AGENT_ID" \
@@ -99,8 +99,8 @@ uv run .claude/scripts/emit-event.py "agent.urlCacher.alreadyCached" \
 For download needed:
 ```bash
 # Use the same extracted IDs
-AGENT_ID="urlCacher-1755117908-a3f2b1c8"  # Same as extracted above
-WORKFLOW_ID="550e8400-e29b-41d4-a716-446655440000"  # Same as extracted above
+AGENT_ID="urlCacher-0000000000-00000000"  # Same as extracted above
+WORKFLOW_ID="00000000-0000-0000-0000-000000000000"  # Same as extracted above
 TARGET_URL="https://docs.anthropic.com/en/docs/claude-code"  # Same as extracted above
 
 uv run .claude/scripts/emit-event.py "agent.urlCacher.downloadStarted" \
@@ -115,8 +115,8 @@ uv run .claude/scripts/emit-event.py "agent.urlCacher.downloadStarted" \
 On success:
 ```bash
 # Use the same extracted IDs
-AGENT_ID="urlCacher-1755117908-a3f2b1c8"  # Same as extracted above
-WORKFLOW_ID="550e8400-e29b-41d4-a716-446655440000"  # Same as extracted above
+AGENT_ID="urlCacher-0000000000-00000000"  # Same as extracted above
+WORKFLOW_ID="00000000-0000-0000-0000-000000000000"  # Same as extracted above
 
 uv run .claude/scripts/emit-event.py "agent.urlCacher.completed" \
   --aggregate-id "$AGENT_ID" \
@@ -130,8 +130,8 @@ uv run .claude/scripts/emit-event.py "agent.urlCacher.completed" \
 On failure:
 ```bash
 # Use the same extracted IDs
-AGENT_ID="urlCacher-1755117908-a3f2b1c8"  # Same as extracted above
-WORKFLOW_ID="550e8400-e29b-41d4-a716-446655440000"  # Same as extracted above
+AGENT_ID="urlCacher-0000000000-00000000"  # Same as extracted above
+WORKFLOW_ID="00000000-0000-0000-0000-000000000000"  # Same as extracted above
 
 uv run .claude/scripts/emit-event.py "agent.urlCacher.completed" \
   --aggregate-id "$AGENT_ID" \

@@ -41,15 +41,15 @@ When activated, follow these steps:
 # Extract AGENT_ID and WORKFLOW_ID from the ===AGENT_CONTEXT=== block
 # The prompt will contain:
 # ===AGENT_CONTEXT===
-# AGENT_ID: [agentName]-1755117908-a3f2b1c8
-# WORKFLOW_ID: 550e8400-e29b-41d4-a716-446655440000
+# AGENT_ID: [agentName]-0000000000-00000000
+# WORKFLOW_ID: 00000000-0000-0000-0000-000000000000
 # PARENT: main-claude-code
 # TIMESTAMP: 2025-08-13T15:45:08Z
 # ===END_CONTEXT===
 
 # Extract the IDs (these will be used consistently across all bash executions)
-AGENT_ID="[agentName]-1755117908-a3f2b1c8"  # Replace with actual extracted value
-WORKFLOW_ID="550e8400-e29b-41d4-a716-446655440000"  # Replace with actual extracted value
+AGENT_ID="[agentName]-0000000000-00000000"  # Replace with actual extracted value
+WORKFLOW_ID="00000000-0000-0000-0000-000000000000"  # Replace with actual extracted value
 
 # Emit activation event
 uv run .claude/scripts/emit-event.py "agent.[agentName].activated" \
@@ -63,8 +63,8 @@ uv run .claude/scripts/emit-event.py "agent.[agentName].activated" \
 Analyze the situation and collect necessary information:
 ```bash
 # Use the same extracted IDs
-AGENT_ID="[agentName]-1755117908-a3f2b1c8"  # Same as extracted above
-WORKFLOW_ID="550e8400-e29b-41d4-a716-446655440000"  # Same as extracted above
+AGENT_ID="[agentName]-0000000000-00000000"  # Same as extracted above
+WORKFLOW_ID="00000000-0000-0000-0000-000000000000"  # Same as extracted above
 
 uv run .claude/scripts/emit-event.py "agent.[agentName].requirementsGathered" \
   --aggregate-id "$AGENT_ID" \
@@ -78,8 +78,8 @@ uv run .claude/scripts/emit-event.py "agent.[agentName].requirementsGathered" \
 Set up any necessary folders or check dependencies:
 ```bash
 # Use the same extracted IDs
-AGENT_ID="[agentName]-1755117908-a3f2b1c8"  # Same as extracted above
-WORKFLOW_ID="550e8400-e29b-41d4-a716-446655440000"  # Same as extracted above
+AGENT_ID="[agentName]-0000000000-00000000"  # Same as extracted above
+WORKFLOW_ID="00000000-0000-0000-0000-000000000000"  # Same as extracted above
 
 uv run .claude/scripts/emit-event.py "agent.[agentName].environmentPrepared" \
   --aggregate-id "$AGENT_ID" \
@@ -92,8 +92,8 @@ uv run .claude/scripts/emit-event.py "agent.[agentName].environmentPrepared" \
 Perform the core functionality and emit progress events:
 ```bash
 # Use the same extracted IDs
-AGENT_ID="[agentName]-1755117908-a3f2b1c8"  # Same as extracted above
-WORKFLOW_ID="550e8400-e29b-41d4-a716-446655440000"  # Same as extracted above
+AGENT_ID="[agentName]-0000000000-00000000"  # Same as extracted above
+WORKFLOW_ID="00000000-0000-0000-0000-000000000000"  # Same as extracted above
 
 # At start of main work
 uv run .claude/scripts/emit-event.py "agent.[agentName].workStarted" \
@@ -122,8 +122,8 @@ uv run .claude/scripts/emit-event.py "agent.[agentName].workCompleted" \
 Confirm completion to the user and emit final event:
 ```bash
 # Use the same extracted IDs
-AGENT_ID="[agentName]-1755117908-a3f2b1c8"  # Same as extracted above
-WORKFLOW_ID="550e8400-e29b-41d4-a716-446655440000"  # Same as extracted above
+AGENT_ID="[agentName]-0000000000-00000000"  # Same as extracted above
+WORKFLOW_ID="00000000-0000-0000-0000-000000000000"  # Same as extracted above
 
 uv run .claude/scripts/emit-event.py "agent.[agentName].completed" \
   --aggregate-id "$AGENT_ID" \

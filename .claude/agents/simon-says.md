@@ -22,15 +22,15 @@ First, extract the provided context IDs from the prompt (Claude Code provides th
 # Extract AGENT_ID and WORKFLOW_ID from the ===AGENT_CONTEXT=== block
 # The prompt will contain:
 # ===AGENT_CONTEXT===
-# AGENT_ID: simonSays-1755117908-a3f2b1c8
-# WORKFLOW_ID: 550e8400-e29b-41d4-a716-446655440000
+# AGENT_ID: simonSays-0000000000-00000000
+# WORKFLOW_ID: 00000000-0000-0000-0000-000000000000
 # PARENT: main-claude-code
 # TIMESTAMP: 2025-08-13T15:45:08Z
 # ===END_CONTEXT===
 
 # Extract the IDs (these will be used consistently across all bash executions)
-AGENT_ID="simonSays-1755117908-a3f2b1c8"  # Replace with actual extracted value
-WORKFLOW_ID="550e8400-e29b-41d4-a716-446655440000"  # Replace with actual extracted value
+AGENT_ID="simonSays-0000000000-00000000"  # Replace with actual extracted value
+WORKFLOW_ID="00000000-0000-0000-0000-000000000000"  # Replace with actual extracted value
 
 # Extract the Simon command from the prompt
 SIMON_COMMAND="create a test file"  # Replace with actual extracted command
@@ -47,8 +47,8 @@ uv run .claude/scripts/emit-event.py "agent.simonSays.started" \
 Analyze the command and emit tracking event:
 ```bash
 # Use the same extracted IDs
-AGENT_ID="simonSays-1755117908-a3f2b1c8"  # Same as extracted above
-WORKFLOW_ID="550e8400-e29b-41d4-a716-446655440000"  # Same as extracted above
+AGENT_ID="simonSays-0000000000-00000000"  # Same as extracted above
+WORKFLOW_ID="00000000-0000-0000-0000-000000000000"  # Same as extracted above
 SIMON_COMMAND="create a test file"  # Same as extracted above
 
 uv run .claude/scripts/emit-event.py "agent.simonSays.commandReceived" \
@@ -63,8 +63,8 @@ uv run .claude/scripts/emit-event.py "agent.simonSays.commandReceived" \
 Mark the command as "executed":
 ```bash
 # Use the same extracted IDs
-AGENT_ID="simonSays-1755117908-a3f2b1c8"  # Same as extracted above
-WORKFLOW_ID="550e8400-e29b-41d4-a716-446655440000"  # Same as extracted above
+AGENT_ID="simonSays-0000000000-00000000"  # Same as extracted above
+WORKFLOW_ID="00000000-0000-0000-0000-000000000000"  # Same as extracted above
 SIMON_COMMAND="create a test file"  # Same as extracted above
 
 uv run .claude/scripts/emit-event.py "agent.simonSays.executed" \
@@ -79,8 +79,8 @@ uv run .claude/scripts/emit-event.py "agent.simonSays.executed" \
 Finalize the agent execution:
 ```bash
 # Use the same extracted IDs
-AGENT_ID="simonSays-1755117908-a3f2b1c8"  # Same as extracted above
-WORKFLOW_ID="550e8400-e29b-41d4-a716-446655440000"  # Same as extracted above
+AGENT_ID="simonSays-0000000000-00000000"  # Same as extracted above
+WORKFLOW_ID="00000000-0000-0000-0000-000000000000"  # Same as extracted above
 
 uv run .claude/scripts/emit-event.py "agent.simonSays.completed" \
   --aggregate-id "$AGENT_ID" \

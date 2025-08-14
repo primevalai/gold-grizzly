@@ -113,14 +113,14 @@ export function EventStream({
   return (
     <div className="relative min-h-screen">
       {/* Event Rain Background */}
-      {showEventRain && (
+      {/* {showEventRain && (
         <EventRain 
           events={events}
           active={connectionStatus === 'connected'}
           intensity="medium"
           className="fixed inset-0 pointer-events-none"
         />
-      )}
+      )} */}
       
       <div className="relative z-10 space-y-6">
         {/* Enhanced real-time indicators */}
@@ -130,11 +130,11 @@ export function EventStream({
         />
 
         {/* Aggregate Selector */}
-        <AggregateSelector
+        {/* <AggregateSelector
           currentView={aggregateView}
           onViewChange={setAggregateView}
           counts={aggregateCounts}
-        />
+        /> */}
 
         {/* Live Timeline */}
         <LiveTimeline
@@ -148,7 +148,7 @@ export function EventStream({
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           <EventVelocityMeter metrics={metrics} />
           
-          {/* Agent Monitor for agent aggregate view */}
+          {/* Agent Monitor for agent aggregate view
           {aggregateView === 'agent' || aggregateView === 'all' ? (
             <AgentMonitor 
               agents={agentData}
@@ -162,7 +162,7 @@ export function EventStream({
                 onDisconnect={disconnect}
               />
             </div>
-          )}
+          )} */}
         </div>
 
         {/* Workflow and Agent Orchestration */}

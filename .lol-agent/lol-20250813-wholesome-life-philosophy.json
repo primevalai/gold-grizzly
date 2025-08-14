@@ -7,7 +7,7 @@
   "conversation_context": "Discussion about life's best moments, leading to the heartwarming conclusion that helping others solve problems brings the greatest joy and meaning",
   "agent_metadata": {
     "agent_id": "lolRecorder-1723561260-a9b3e2f1",
-    "workflow_id": "550e8400-e29b-41d4-a716-446655440000",
+    "workflow_id": "00000000-0000-0000-0000-000000000000",
     "parent": "main-claude-code",
     "capture_timestamp": "2025-08-13T21:38:13.047257+00:00",
     "agent_version": "lol-recorder-v1",

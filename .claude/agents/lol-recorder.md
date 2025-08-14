@@ -22,15 +22,15 @@ First, extract the provided context IDs from the prompt (Claude Code provides th
 # Extract AGENT_ID and WORKFLOW_ID from the ===AGENT_CONTEXT=== block
 # The prompt will contain:
 # ===AGENT_CONTEXT===
-# AGENT_ID: lolRecorder-1755117908-a3f2b1c8
-# WORKFLOW_ID: 550e8400-e29b-41d4-a716-446655440000
+# AGENT_ID: lolRecorder-0000000000-00000000
+# WORKFLOW_ID: 00000000-0000-0000-0000-000000000000
 # PARENT: main-claude-code
 # TIMESTAMP: 2025-08-13T15:45:08Z
 # ===END_CONTEXT===
 
 # Extract the IDs (these will be used consistently across all bash executions)
-AGENT_ID="lolRecorder-1755117908-a3f2b1c8"  # Replace with actual extracted value
-WORKFLOW_ID="550e8400-e29b-41d4-a716-446655440000"  # Replace with actual extracted value
+AGENT_ID="lolRecorder-0000000000-00000000"  # Replace with actual extracted value
+WORKFLOW_ID="00000000-0000-0000-0000-000000000000"  # Replace with actual extracted value
 
 # Extract trigger information from the prompt
 TRIGGER_PHRASE="This is ridiculous!"  # Replace with actual extracted phrase
@@ -50,8 +50,8 @@ uv run .claude/scripts/emit-event.py "agent.lolRecorder.started" \
 Analyze the situation and collect comprehensive metadata:
 ```bash
 # Use the same extracted IDs
-AGENT_ID="lolRecorder-1755117908-a3f2b1c8"  # Same as extracted above
-WORKFLOW_ID="550e8400-e29b-41d4-a716-446655440000"  # Same as extracted above
+AGENT_ID="lolRecorder-0000000000-00000000"  # Same as extracted above
+WORKFLOW_ID="00000000-0000-0000-0000-000000000000"  # Same as extracted above
 
 uv run .claude/scripts/emit-event.py "agent.lolRecorder.contextGathered" \
   --aggregate-id "$AGENT_ID" \
@@ -66,8 +66,8 @@ uv run .claude/scripts/emit-event.py "agent.lolRecorder.contextGathered" \
 Check/create the .lol-agent folder:
 ```bash
 # Use the same extracted IDs
-AGENT_ID="lolRecorder-1755117908-a3f2b1c8"  # Same as extracted above
-WORKFLOW_ID="550e8400-e29b-41d4-a716-446655440000"  # Same as extracted above
+AGENT_ID="lolRecorder-0000000000-00000000"  # Same as extracted above
+WORKFLOW_ID="00000000-0000-0000-0000-000000000000"  # Same as extracted above
 
 mkdir -p .lol-agent
 uv run .claude/scripts/emit-event.py "agent.lolRecorder.folderCreated" \
@@ -81,8 +81,8 @@ uv run .claude/scripts/emit-event.py "agent.lolRecorder.folderCreated" \
 Create the comprehensive JSON document with all metadata and save it:
 ```bash
 # Use the same extracted IDs
-AGENT_ID="lolRecorder-1755117908-a3f2b1c8"  # Same as extracted above
-WORKFLOW_ID="550e8400-e29b-41d4-a716-446655440000"  # Same as extracted above
+AGENT_ID="lolRecorder-0000000000-00000000"  # Same as extracted above
+WORKFLOW_ID="00000000-0000-0000-0000-000000000000"  # Same as extracted above
 
 # After saving the JSON file with Write tool
 uv run .claude/scripts/emit-event.py "agent.lolRecorder.momentRecorded" \
@@ -98,8 +98,8 @@ uv run .claude/scripts/emit-event.py "agent.lolRecorder.momentRecorded" \
 Confirm to the user and emit final event:
 ```bash
 # Use the same extracted IDs
-AGENT_ID="lolRecorder-1755117908-a3f2b1c8"  # Same as extracted above
-WORKFLOW_ID="550e8400-e29b-41d4-a716-446655440000"  # Same as extracted above
+AGENT_ID="lolRecorder-0000000000-00000000"  # Same as extracted above
+WORKFLOW_ID="00000000-0000-0000-0000-000000000000"  # Same as extracted above
 uv run .claude/scripts/emit-event.py "agent.lolRecorder.completed" \
   --aggregate-id "$AGENT_ID" \
   --correlation-id "$WORKFLOW_ID" \

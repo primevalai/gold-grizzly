@@ -1,0 +1,104 @@
+# Agentic Coordination Examples
+
+## Multi-Agent Workflow Patterns
+
+### 1. Sequential Agent Chain
+```
+orchestrator -> data-fetcher -> analyzer -> reporter -> archiver
+```
+Example: Fetch API data, analyze trends, generate report, store results
+
+### 2. Parallel Agent Execution  
+```
+orchestrator -> [agent-a, agent-b, agent-c] -> consolidator
+```
+Example: Process multiple data sources simultaneously, then merge results
+
+### 3. Conditional Agent Routing
+```
+orchestrator -> validator -> [success-path | error-path] -> finalizer
+```
+Example: Validate input, route to different processors based on validation result
+
+### 4. Event-Driven Agent Coordination
+```
+trigger-event -> listener-agent -> publisher-agent -> [subscriber-agents]
+```
+Example: File upload triggers processing agents that emit completion events
+
+### 5. Hierarchical Agent Delegation
+```
+parent-agent -> [child-agent-1 -> grandchild-agents] -> parent-agent
+```
+Example: Project manager delegates to team leads who delegate to specialists
+
+## Real-World Scenarios
+
+### E-commerce Order Processing
+1. **Order Validator** - Validates customer and inventory
+2. **Payment Processor** - Handles payment transactions  
+3. **Inventory Manager** - Updates stock levels
+4. **Fulfillment Agent** - Coordinates shipping
+5. **Notification Agent** - Sends customer updates
+
+### Content Publishing Pipeline
+1. **Content Ingester** - Receives raw content
+2. **Editor Agent** - Reviews and edits content
+3. **SEO Optimizer** - Optimizes for search engines
+4. **Publisher Agent** - Publishes to platforms
+5. **Analytics Tracker** - Monitors performance
+
+### Data Science Workflow
+1. **Data Collector** - Gathers data from sources
+2. **Data Cleaner** - Preprocesses and validates data
+3. **Feature Engineer** - Creates model features
+4. **Model Trainer** - Trains ML models
+5. **Model Evaluator** - Tests model performance
+6. **Deployment Agent** - Deploys model to production
+
+## Coordination Mechanisms
+
+### Event-Based Communication
+- Agents emit events to signal completion
+- Other agents subscribe to relevant events
+- Enables loose coupling and scalability
+
+### Shared State Management
+- Agents read/write to shared data stores
+- Coordination through state synchronization
+- Requires careful concurrency handling
+
+### Message Passing
+- Direct agent-to-agent communication
+- Queue-based message delivery
+- Enables complex conversation patterns
+
+### Workflow Orchestration
+- Central orchestrator manages agent execution
+- Defines workflow logic and dependencies  
+- Provides monitoring and error handling
+
+## Best Practices
+
+1. **Single Responsibility** - Each agent has one clear purpose
+2. **Loose Coupling** - Agents communicate through well-defined interfaces
+3. **Error Resilience** - Handle failures gracefully with retries/fallbacks
+4. **Monitoring** - Track agent performance and workflow health
+5. **Scalability** - Design for horizontal scaling of agent instances
+6. **Versioning** - Manage agent interface changes carefully
+
+## Anti-Patterns to Avoid
+
+- **Tight Coupling** - Agents directly dependent on internal details
+- **Circular Dependencies** - Agents creating deadlock conditions
+- **Shared Mutable State** - Race conditions and inconsistent data
+- **Monolithic Agents** - Single agent doing too many things
+- **Synchronous Blocking** - Agents waiting unnecessarily for responses
+
+## Event System Integration
+
+This workflow-demo.txt was created by the Simon Says agent as part of the Gold Grizzly event telemetry system, demonstrating:
+- Agent lifecycle tracking through events
+- Workflow correlation via correlation IDs
+- Parent-child agent relationships
+- Command execution simulation
