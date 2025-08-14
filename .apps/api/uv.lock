@@ -50,7 +50,7 @@ dev = [
 [package.metadata]
 requires-dist = [
     { name = "black", marker = "extra == 'dev'", specifier = ">=23.0.0" },
-    { name = "eventuali", specifier = ">=0.1.0" },
+    { name = "eventuali", specifier = "==0.1.1" },
     { name = "fastapi", specifier = ">=0.100.0" },
     { name = "flake8", marker = "extra == 'dev'", specifier = ">=6.0.0" },
     { name = "httpx", specifier = ">=0.24.0" },
@@ -170,7 +170,7 @@ wheels = [
 
 [[package]]
 name = "eventuali"
-version = "0.1.0"
+version = "0.1.1"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "asyncio" },
@@ -186,9 +186,9 @@ dependencies = [
     { name = "typing-extensions" },
 ]
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/b6/27/43423dab0154eecfd9bded4aeee5d082725627812093ff9604fc54c9cfcd/eventuali-0.1.0-cp38-abi3-macosx_11_0_arm64.whl", hash = "sha256:5b993f5dfb0f4f292e6590861f6802ccaa882cb5ade87d031513aab4a75078f1", size = 4318028, upload-time = "2025-08-11T05:03:35.185Z" },
-    { url = "https://files.pythonhosted.org/packages/75/3d/4208c62849071359b46300ed08df913a1bb2495fe30c419037f206157a6f/eventuali-0.1.0-cp38-abi3-manylinux_2_34_x86_64.whl", hash = "sha256:e3f5cb863c753686865209413cabbcf1f16ca12cac1d3427ff99164b22344cd6", size = 7332445, upload-time = "2025-08-11T05:03:37.008Z" },
-    { url = "https://files.pythonhosted.org/packages/41/8d/3b7b281a8dbe7a85b8dd14498abb9b5229debb9376895fdec3515474e97b/eventuali-0.1.0-cp38-abi3-win_amd64.whl", hash = "sha256:6c395e5b7ce5989300cd245652bb22c388e9550a9c39288df5d8943423ee8e24", size = 4658239, upload-time = "2025-08-11T05:03:38.945Z" },
+    { url = "https://files.pythonhosted.org/packages/66/a8/4282bf24764bafdaf4041e2ef973beef6a444a55f69ec75974712b312529/eventuali-0.1.1-cp38-abi3-macosx_11_0_arm64.whl", hash = "sha256:7dd63dfb1e846379fe2a8bf9dacfbc5a9bdfa841bcc3d290536b85b9ad5c74d7", size = 4318849, upload-time = "2025-08-14T02:12:20.634Z" },
+    { url = "https://files.pythonhosted.org/packages/f6/3e/5dd6575a99d261eae1202e4120a241b710f250ac11a8a36fb41f6564e739/eventuali-0.1.1-cp38-abi3-manylinux_2_34_x86_64.whl", hash = "sha256:066a8880e216a6a1b5a8b6b6901dd6ab1570e50c8b8d401788d2e20de1db2bf0", size = 7332484, upload-time = "2025-08-14T02:12:23.248Z" },
+    { url = "https://files.pythonhosted.org/packages/4e/8d/e24d64e0f9025124d003b51d4d80b11bb7952248412f63d66d3a5035620c/eventuali-0.1.1-cp38-abi3-win_amd64.whl", hash = "sha256:d576c11be68fa66b267c41e6278e7fce0dffe84489b76d26476c482c0928d809", size = 4659099, upload-time = "2025-08-14T02:12:24.937Z" },
 ]
 
 [[package]]

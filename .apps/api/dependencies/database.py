@@ -28,6 +28,17 @@ class DatabaseManager:
                     self._store = await EventStore.create(
                         f"sqlite:///{db_path.absolute()}"
                     )
+                    
+                    # Register custom event classes for proper deserialization
+                    # Import here to avoid circular dependency
+                    from routes.events import AgentEvent, WorkflowEvent, SystemEvent
+                    
+                    # Register by class name
+                    EventStore.register_event_class("AgentEvent", AgentEvent)
+                    EventStore.register_event_class("WorkflowEvent", WorkflowEvent)
+                    EventStore.register_event_class("SystemEvent", SystemEvent)
+                    
+                    print("Registered custom event classes for proper deserialization")
         
         return self._store
     
@@ -104,7 +115,21 @@ class DatabaseManager:
                     'user_id': event.user_id,
                     'causation_id': str(event.causation_id) if event.causation_id else None,
                     'correlation_id': str(event.correlation_id) if event.correlation_id else None,
+                    # Get custom fields from properly deserialized event
+                    'attributes': getattr(event, 'attributes', {}),
+                    'agent_name': getattr(event, 'agent_name', ''),
+                    'agent_id': getattr(event, 'agent_id', ''),
+                    'parent_agent_id': getattr(event, 'parent_agent_id', ''),
+                    'workflow_id': getattr(event, 'workflow_id', ''),
+                    'event_name': getattr(event, 'event_name', ''),
                 })
+                
+                
+                # Override correlation_id and causation_id with agent-specific fields if available
+                if event_dict.get('workflow_id'):
+                    event_dict['correlation_id'] = event_dict['workflow_id']
+                if event_dict.get('parent_agent_id'):
+                    event_dict['causation_id'] = event_dict['parent_agent_id']
                 
                 # Filter by event type if specified
                 if event_type is None or event.event_type == event_type:

@@ -360,6 +360,9 @@ async def create_event(
 ) -> EventResponse:
     """Create and store a new event using the three-aggregate system."""
     try:
+        # Debug: Log incoming request
+        print(f"DEBUG: Received event request: name={event_request.name}, attributes={event_request.attributes}")
+        
         # Set timestamp if not provided
         timestamp = event_request.timestamp or datetime.now(timezone.utc)
         
@@ -399,6 +402,12 @@ async def create_event(
                 event_name=event_name,
                 attributes=event_request.attributes
             )
+            
+            # Set base Event class fields after creation
+            if event_request.correlation_id:
+                event.correlation_id = event_request.correlation_id
+            if event_request.causation_id:
+                event.causation_id = event_request.causation_id
             
             aggregate.apply(event)
             

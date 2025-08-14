@@ -23,6 +23,19 @@ export interface EventData {
   status?: {
     code: string;
   };
+  
+  // Agent-specific fields
+  agent_name?: string;
+  agent_id?: string;
+  parent_agent_id?: string;
+  workflow_id?: string;
+  event_name?: string;
+  
+  // Workflow-specific fields
+  user_prompt?: string;
+  
+  // System-specific fields
+  session_id?: string;
 }
 
 /**

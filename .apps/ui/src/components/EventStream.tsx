@@ -3,6 +3,10 @@
 import { useEventStream } from '@/hooks/useEventStream';
 import { EventList } from './EventList';
 import { ConnectionStatus } from './ConnectionStatus';
+import { LiveEventPulse } from './realtime/LiveEventPulse';
+import { EventVelocityMeter } from './realtime/EventVelocityMeter';
+import { WorkflowSwimlanes } from './orchestration/WorkflowSwimlanes';
+import { AgentHierarchy } from './orchestration/AgentHierarchy';
 import { Button } from '@/components/ui/button';
 
 /**
@@ -22,6 +26,7 @@ export function EventStream({
   const { 
     events, 
     connectionStatus, 
+    metrics,
     connect, 
     disconnect, 
     clearEvents 
@@ -29,12 +34,31 @@ export function EventStream({
 
   return (
     <div className="space-y-6">
-      {/* Connection status and controls */}
-      <ConnectionStatus 
-        status={connectionStatus}
-        onReconnect={connect}
-        onDisconnect={disconnect}
+      {/* Enhanced real-time indicators */}
+      <LiveEventPulse 
+        connectionStatus={connectionStatus}
+        metrics={metrics}
       />
+
+      {/* Real-time metrics dashboard */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <EventVelocityMeter metrics={metrics} />
+        
+        {/* Legacy connection status - keep for now */}
+        <div className="lg:col-span-1">
+          <ConnectionStatus 
+            status={connectionStatus}
+            onReconnect={connect}
+            onDisconnect={disconnect}
+          />
+        </div>
+      </div>
+
+      {/* Workflow and Agent Orchestration */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <WorkflowSwimlanes events={events} />
+        <AgentHierarchy events={events} />
+      </div>
 
       {/* Event controls */}
       <div className="flex items-center justify-between">

@@ -83,6 +83,73 @@ export function EventCard({ event }: EventCardProps) {
             )}
           </div>
 
+          {/* Agent-specific fields */}
+          {(event.agent_name || event.agent_id || event.parent_agent_id || event.event_name) && (
+            <div>
+              <h4 className="font-medium text-sm mb-2">Agent Details:</h4>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-2 text-sm">
+                {event.agent_name && (
+                  <div>
+                    <span className="font-medium">Agent Type:</span>{' '}
+                    <span className="font-mono text-xs">{event.agent_name}</span>
+                  </div>
+                )}
+                {event.agent_id && (
+                  <div>
+                    <span className="font-medium">Agent ID:</span>{' '}
+                    <span className="font-mono text-xs">{event.agent_id}</span>
+                  </div>
+                )}
+                {event.parent_agent_id && (
+                  <div>
+                    <span className="font-medium">Parent Agent:</span>{' '}
+                    <span className="font-mono text-xs">{event.parent_agent_id}</span>
+                  </div>
+                )}
+                {event.event_name && (
+                  <div>
+                    <span className="font-medium">Event Name:</span>{' '}
+                    <span className="font-mono text-xs">{event.event_name}</span>
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
+
+          {/* Workflow-specific fields */}
+          {(event.workflow_id || event.user_prompt) && (
+            <div>
+              <h4 className="font-medium text-sm mb-2">Workflow Details:</h4>
+              <div className="grid grid-cols-1 gap-2 text-sm">
+                {event.workflow_id && (
+                  <div>
+                    <span className="font-medium">Workflow ID:</span>{' '}
+                    <span className="font-mono text-xs">{event.workflow_id}</span>
+                  </div>
+                )}
+                {event.user_prompt && (
+                  <div>
+                    <span className="font-medium">User Prompt:</span>{' '}
+                    <span className="text-xs bg-muted p-2 rounded mt-1 block">{event.user_prompt}</span>
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
+
+          {/* System-specific fields */}
+          {event.session_id && (
+            <div>
+              <h4 className="font-medium text-sm mb-2">System Details:</h4>
+              <div className="text-sm">
+                <div>
+                  <span className="font-medium">Session ID:</span>{' '}
+                  <span className="font-mono text-xs">{event.session_id}</span>
+                </div>
+              </div>
+            </div>
+          )}
+
           {/* Event attributes */}
           {event.attributes && Object.keys(event.attributes).length > 0 && (
             <div>
@@ -112,6 +179,16 @@ export function EventCard({ event }: EventCardProps) {
               )}
             </div>
           )}
+
+          {/* Full internal event */}
+          <div>
+            <h4 className="font-medium text-sm mb-2">Full Internal Event:</h4>
+            <div className="bg-muted rounded p-3">
+              <pre className="text-xs overflow-x-auto whitespace-pre-wrap">
+                {JSON.stringify(event, null, 2)}
+              </pre>
+            </div>
+          </div>
         </div>
       </CardContent>
     </Card>
