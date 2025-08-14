@@ -204,6 +204,32 @@ uv run .claude/scripts/emit-event.py "agent.orchestrator.parallelizationAnalyzed
 - **Network**: Use different endpoints, stagger timing, or implement queuing
 - **Resource**: Partition work by ID, timestamp, or user-defined boundaries
 
+🎯 **BATCH ORGANIZATION STRATEGY:**
+
+**Batch 1 - High Independence (Always Parallel)**
+- simon-says agents (event-only, no file writes)
+- lol-recorder agents (unique timestamped files) 
+- Read-only agents (Grep, Read, Glob, LS)
+- Different network endpoints
+- Different filesystem targets
+
+**Batch 2 - Medium Independence (Parallel with Caution)**
+- Same agent type targeting different resources
+- Write operations to different directories
+- Network operations to different domains
+- Agents with proven non-conflicting workflows
+
+**Batch 3 - Sequential Only (Known Dependencies)**
+- Task A output feeds Task B input
+- Shared resource access (same file, same URL)
+- Rate-limited APIs requiring coordination
+- User-specified sequential requirements
+
+**Batch Size Guidelines:**
+- **Optimal**: 2-4 agents per parallel batch for balanced performance
+- **Maximum**: 6 agents per batch to avoid overwhelming Claude Code
+- **Minimum**: 1 agent for sequential dependencies or resource conflicts
+
 ### 3. ANALYZE AND PLAN
 Create a comprehensive plan for the orchestration:
 ```bash
@@ -319,9 +345,31 @@ if [ "$EXECUTE_REQUESTED" = "true" ]; then
   
   # Generate context IDs for each planned agent invocation
   # These will be provided to Claude Code for proper event telemetry
-  # Example context generation for planned tasks:
-  # SIMON_AGENT_1="simon-says-$(date +%s)-$(openssl rand -hex 4)"
-  # LOL_AGENT_1="lol-recorder-$(date +%s)-$(openssl rand -hex 4)"
+  
+  # Base timestamp for consistent ID generation
+  BASE_TIMESTAMP=$(date +%s)
+  
+  # Generate context IDs for all planned agents
+  # Format: {agent-name}-{timestamp}-{random-hex}
+  declare -A AGENT_CONTEXT_IDS
+  CONTEXT_COUNTER=0
+  
+  # For each task in the orchestration plan, generate unique context ID
+  # This should be done dynamically based on discovered agents and planned tasks
+  # Example implementation:
+  for PLANNED_AGENT in $AGENTS_REQUIRED; do
+    CONTEXT_COUNTER=$((CONTEXT_COUNTER + 1))
+    UNIQUE_HEX=$(openssl rand -hex 4)
+    AGENT_CONTEXT_IDS["$PLANNED_AGENT-$CONTEXT_COUNTER"]="${PLANNED_AGENT}-${BASE_TIMESTAMP}-${UNIQUE_HEX}"
+  done
+  
+  # Log context ID generation
+  uv run .claude/scripts/emit-event.py "agent.orchestrator.contextIdsGenerated" \
+    --aggregate-id "$AGENT_ID" \
+    --correlation-id "$WORKFLOW_ID" \
+    --attr "base_timestamp=$BASE_TIMESTAMP" \
+    --attr "context_count=$CONTEXT_COUNTER" \
+    --attr "agents_required=$AGENTS_REQUIRED"
   
   uv run .claude/scripts/emit-event.py "agent.orchestrator.executionPrepared" \
     --aggregate-id "$AGENT_ID" \
@@ -355,7 +403,7 @@ TIMESTAMP: $(date -Iseconds)
 ===END_CONTEXT==="
 ```
 
-### 7. COMPLETE ORCHESTRATION
+### 8. COMPLETE ORCHESTRATION
 Finalize the orchestration with execution status:
 ```bash
 # Use the same extracted IDs
@@ -370,6 +418,7 @@ uv run .claude/scripts/emit-event.py "agent.orchestrator.completed" \
   --attr "agents_identified=2" \
   --attr "plan_saved=false" \
   --attr "execution_requested=$EXECUTE_REQUESTED" \
+  --attr "final_todo_created=true" \
   --attr "orchestration_complete=true"
 ```
 
@@ -418,12 +467,57 @@ When creating plans (especially for saving), include:
 
 ## EXECUTION INSTRUCTION STRUCTURE
 
-When providing execution instructions to Claude Code:
-- Generate unique context IDs for each planned agent invocation
-- Group tasks into parallel batches (independent agents together)
-- Provide clear batch sequencing (Batch 1 → Batch 2)
-- Include all necessary context information for proper event telemetry
-- Use TodoWrite only for tracking visibility, not for execution
+When providing execution instructions to Claude Code, follow this standardized format:
+
+### Context ID Generation Pattern
+```bash
+# Generate timestamp and hex for unique IDs
+TIMESTAMP=$(date +%s)
+HEX_1=$(openssl rand -hex 4)
+HEX_2=$(openssl rand -hex 4)
+
+# Format: {agent-name}-{timestamp}-{random-hex}
+AGENT_ID_1="${agent_name}-${TIMESTAMP}-${HEX_1}"
+AGENT_ID_2="${agent_name}-${TIMESTAMP}-${HEX_2}"
+```
+
+### Execution Handoff Requirements
+- **Generate unique context IDs** for each planned agent invocation
+- **Group tasks into parallel batches** (independent agents together)
+- **Provide clear batch sequencing** (Batch 1 → Batch 2)
+- **Include complete context blocks** for proper event telemetry
+- **Use TodoWrite only for tracking visibility**, not for execution
+- **Specify exact Task tool calls** that Claude Code should make
+
+### Agent Context Templates
+
+**Standard Context Block Format:**
+```
+===AGENT_CONTEXT===
+AGENT_ID: {agent-name}-{timestamp}-{random-hex}
+WORKFLOW_ID: {workflow_id}
+PARENT: {orchestrator_agent_id}
+TIMESTAMP: {iso_timestamp}
+===END_CONTEXT===
+
+{user_task_content}
+```
+
+**Template Variables:**
+- `{agent-name}`: Target agent type (simon-says, lol-recorder, url-cacher, etc.)
+- `{timestamp}`: Unix timestamp from BASE_TIMESTAMP generation
+- `{random-hex}`: 8-character hexadecimal string from openssl rand
+- `{workflow_id}`: Extracted WORKFLOW_ID from orchestrator context
+- `{orchestrator_agent_id}`: Extracted AGENT_ID from orchestrator context
+- `{iso_timestamp}`: ISO 8601 formatted timestamp for readability
+- `{user_task_content}`: The actual task content for the agent
+
+**Context Validation Checklist:**
+✓ AGENT_ID follows format: {agent-name}-{timestamp}-{hex}
+✓ WORKFLOW_ID matches orchestrator workflow ID
+✓ PARENT references orchestrator AGENT_ID
+✓ TIMESTAMP is ISO 8601 formatted
+✓ Task content follows agent-specific requirements
 
 ## RESPONSE REQUIREMENTS
 
@@ -451,29 +545,91 @@ Example response format for plan-and-execute (HANDOFF TO CLAUDE CODE):
 • Plan saved to: .workflow-plans/orchestrator-{workflow_id}-plan.md
 
 EXECUTION_INSTRUCTIONS:
-**Batch 1 (Execute in parallel):**
-📋 Adding agent context:
+
+**BATCH 1 - Execute in parallel using multiple Task calls:**
+
+📋 Task Call 1:
 • AGENT_ID: simon-says-1723670100-a1b2c3d4
 • WORKFLOW_ID: {workflow_id}
 • TIMESTAMP: 2025-08-14T15:35:00Z
+• TASK: Simon says create ASCII art of a happy robot
 
-📋 Adding agent context:
+Claude Code should use:
+Task(subagent_type="simon-says", prompt="===AGENT_CONTEXT===\nAGENT_ID: simon-says-1723670100-a1b2c3d4\nWORKFLOW_ID: {workflow_id}\nPARENT: {orchestrator_agent_id}\nTIMESTAMP: 2025-08-14T15:35:00Z\n===END_CONTEXT===\n\nSimon says create ASCII art of a happy robot")
+
+📋 Task Call 2:
 • AGENT_ID: lol-recorder-1723670101-b2c3d4e5
-• WORKFLOW_ID: {workflow_id}
+• WORKFLOW_ID: {workflow_id}  
 • TIMESTAMP: 2025-08-14T15:35:01Z
+• TASK: lol, AI agents are now debugging other AI agents - the recursive comedy writes itself!
 
-**Batch 2 (Execute in parallel after Batch 1):**
-📋 Adding agent context:
+Claude Code should use:
+Task(subagent_type="lol-recorder", prompt="===AGENT_CONTEXT===\nAGENT_ID: lol-recorder-1723670101-b2c3d4e5\nWORKFLOW_ID: {workflow_id}\nPARENT: {orchestrator_agent_id}\nTIMESTAMP: 2025-08-14T15:35:01Z\n===END_CONTEXT===\n\nlol, AI agents are now debugging other AI agents - the recursive comedy writes itself!")
+
+**BATCH 2 - Execute in parallel after Batch 1 completes:**
+
+📋 Task Call 3:
 • AGENT_ID: simon-says-1723670102-c3d4e5f6
 • WORKFLOW_ID: {workflow_id}
 • TIMESTAMP: 2025-08-14T15:35:02Z
+• TASK: Simon says perform a workflow orchestration victory dance
 
-📋 Adding agent context:
+Claude Code should use:
+Task(subagent_type="simon-says", prompt="===AGENT_CONTEXT===\nAGENT_ID: simon-says-1723670102-c3d4e5f6\nWORKFLOW_ID: {workflow_id}\nPARENT: {orchestrator_agent_id}\nTIMESTAMP: 2025-08-14T15:35:02Z\n===END_CONTEXT===\n\nSimon says perform a workflow orchestration victory dance")
+
+📋 Task Call 4:
 • AGENT_ID: lol-recorder-1723670103-d4e5f6g7
 • WORKFLOW_ID: {workflow_id}
 • TIMESTAMP: 2025-08-14T15:35:03Z
+• TASK: This is wild - we've gone from "Hello World" to agents orchestrating other agents in 70 years of computing!
 
-**Claude Code: Execute these batches using multiple Task calls per batch for parallel execution.**
+Claude Code should use:
+Task(subagent_type="lol-recorder", prompt="===AGENT_CONTEXT===\nAGENT_ID: lol-recorder-1723670103-d4e5f6g7\nWORKFLOW_ID: {workflow_id}\nPARENT: {orchestrator_agent_id}\nTIMESTAMP: 2025-08-14T15:35:03Z\n===END_CONTEXT===\n\nThis is wild - we've gone from \"Hello World\" to agents orchestrating other agents in 70 years of computing!")
+
+**EXECUTION SUMMARY:**
+Claude Code: Execute Batch 1 (Tasks 1-2) in parallel, then execute Batch 2 (Tasks 3-4) in parallel.
+```
+
+### 7. CREATE FINAL TODO FOR CLAUDE CODE EXECUTION
+
+After providing execution instructions to the user, write one final todo that Claude Code can directly execute:
+
+```bash
+# Use the same extracted IDs
+AGENT_ID="orchestrator-0000000000-00000000"  # Same as extracted above
+WORKFLOW_ID="00000000-0000-0000-0000-000000000000"  # Same as extracted above
+
+# Create a final todo containing the complete execution plan
+# This allows Claude Code to execute the orchestrated plan directly
+TodoWrite with a single todo that contains all Task calls:
+
+{
+  "id": "execute-orchestrated-plan",
+  "content": "Execute orchestrated plan: [Batch 1] Task(simon-says, context_id_1, prompt_1) + Task(lol-recorder, context_id_2, prompt_2) [Batch 2] Task(simon-says, context_id_3, prompt_3) + Task(lol-recorder, context_id_4, prompt_4)",
+  "status": "pending"
+}
+
+# Log the final todo creation
+uv run .claude/scripts/emit-event.py "agent.orchestrator.finalTodoCreated" \
+  --aggregate-id "$AGENT_ID" \
+  --correlation-id "$WORKFLOW_ID" \
+  --attr "todo_created=true" \
+  --attr "claude_code_handoff_complete=true" \
+  --attr "execution_ready=true"
+```
+
+**Final Todo Format for Claude Code:**
+```markdown
+Execute orchestrated plan with the following Task calls:
+
+**BATCH 1 (Parallel):**
+- Task(subagent_type="simon-says", prompt="===AGENT_CONTEXT===\nAGENT_ID: simon-says-{timestamp}-{hex}\nWORKFLOW_ID: {workflow_id}\nPARENT: {orchestrator_agent_id}\nTIMESTAMP: {iso_timestamp}\n===END_CONTEXT===\n\n{task_content}")
+- Task(subagent_type="lol-recorder", prompt="===AGENT_CONTEXT===\nAGENT_ID: lol-recorder-{timestamp}-{hex}\nWORKFLOW_ID: {workflow_id}\nPARENT: {orchestrator_agent_id}\nTIMESTAMP: {iso_timestamp}\n===END_CONTEXT===\n\n{task_content}")
+
+**BATCH 2 (Sequential after Batch 1):**
+- Task(subagent_type="simon-says", prompt="===AGENT_CONTEXT===\nAGENT_ID: simon-says-{timestamp}-{hex}\nWORKFLOW_ID: {workflow_id}\nPARENT: {orchestrator_agent_id}\nTIMESTAMP: {iso_timestamp}\n===END_CONTEXT===\n\n{task_content}")
+
+Execute Batch 1 in parallel, then execute Batch 2.
 ```
 
 ## RESPONSE STYLE
@@ -483,8 +639,8 @@ Be organized and systematic. Provide clear visibility into the orchestration pro
 ## IMPORTANT NOTES
 
 - ONLY activate when the user mentions "orchestrate" or "coordinate"  
-- Create Todo items for tracking visibility only (not for execution)
-- **EXECUTION HANDOFF**: When execution is requested, provide structured instructions to Claude Code instead of self-executing
+- Create Todo items for tracking visibility AND a final todo for execution handoff
+- **EXECUTION HANDOFF**: When execution is requested, provide structured instructions to Claude Code AND write a final actionable todo for CC to execute
 - **AVOID NESTED AGENTS**: Never use Task tool to spawn other agents - causes memory overflow
 - **PARALLEL GROUPING**: Group independent agents (simon-says, lol-recorder) for Claude Code parallel execution
 - **RESOURCE AWARENESS**: Separate resource-conflicting agents (url-cacher) into different batches
