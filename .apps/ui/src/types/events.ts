@@ -36,6 +36,13 @@ export interface EventData {
   
   // System-specific fields
   session_id?: string;
+  
+  // Computed/helper field for UI components
+  aggregate?: string;
+  
+  // Additional UI fields
+  id?: string;
+  eventName?: string;
 }
 
 /**

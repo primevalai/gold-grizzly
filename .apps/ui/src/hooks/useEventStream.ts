@@ -108,7 +108,16 @@ export function useEventStream(url: string) {
       eventSource.addEventListener('event_created', (event: MessageEvent) => {
         try {
           const receiveTime = Date.now();
-          const eventData: EventData = JSON.parse(event.data);
+          const rawEventData = JSON.parse(event.data);
+          
+          // Map fields for UI components
+          const eventData: EventData = {
+            ...rawEventData,
+            // Add computed fields for UI components
+            aggregate: rawEventData.aggregate_type?.replace('_aggregate', ''),
+            id: rawEventData.event_id,
+            eventName: rawEventData.event_name || rawEventData.event_type
+          };
           
           // Calculate latency from event timestamp
           const eventTime = new Date(eventData.timestamp).getTime();
