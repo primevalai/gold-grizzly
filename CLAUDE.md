@@ -57,6 +57,16 @@ python -m pip install requests
 **EVERY TIME** you use the Task tool to invoke ANY agent, you **MUST**:
 
 #### Step 1: Generate IDs (MANDATORY)
+
+**For runtime use (Claude Code context), use the bash script:**
+```bash
+# YOU MUST GENERATE THESE - NO EXCEPTIONS
+AGENT_ID=$(./.claude/scripts/generate-uuid.sh --agent-id "${agent_name}")
+WORKFLOW_ID=${current_workflow_id:-$(./.claude/scripts/generate-uuid.sh)}
+TIMESTAMP=$(date -u +%Y-%m-%dT%H:%M:%SZ)
+```
+
+**For reference (Python context):**
 ```python
 import uuid
 from datetime import datetime
@@ -106,8 +116,8 @@ Your response MUST be:
 I'll use the simon-says agent to execute Simon's command.
 
 📋 Adding agent context:
-• AGENT_ID: simonSays-1755117908-a3f2b1c8
-• WORKFLOW_ID: 550e8400-e29b-41d4-a716-446655440000
+• AGENT_ID: simonSays-0000000000-00000000
+• WORKFLOW_ID: 00000000-0000-0000-0000-000000000000
 • TIMESTAMP: 2025-08-13T15:45:08Z
 
 [Invoking simon-says agent with context...]
@@ -118,8 +128,8 @@ Then invoke with:
 <invoke name="Task">
 <parameter name="prompt">
 ===AGENT_CONTEXT===
-AGENT_ID: simonSays-1755117908-a3f2b1c8
-WORKFLOW_ID: 550e8400-e29b-41d4-a716-446655440000
+AGENT_ID: simonSays-0000000000-00000000
+WORKFLOW_ID: 00000000-0000-0000-0000-000000000000
 PARENT: main-claude-code
 TIMESTAMP: 2025-08-13T15:45:08Z
 ===END_CONTEXT===
