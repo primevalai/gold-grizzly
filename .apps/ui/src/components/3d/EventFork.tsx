@@ -58,29 +58,31 @@ export function EventFork({
     return agentId.split('-')[0] || 'agent';
   }, [agentEvents, agentId]);
   
-  // Position relative to workflow fork (spread out agents)
+  // Position relative to workflow fork (spread out agents with better visual separation)
   const relativePosition = useMemo(() => {
-    const offsetAngle = (index * Math.PI * 2 / 6) + Math.PI / 3; // Spread around workflow
-    const radius = 0.8 + (index % 3) * 0.3; // Varied distance
+    const offsetAngle = (index * Math.PI * 2 / 4) + Math.PI / 4; // Spread around workflow in 4 directions
+    const radius = 1.2 + (index % 2) * 0.4; // Greater distance with variation
     return new THREE.Vector3(
       Math.cos(offsetAngle) * radius,
-      -0.5 - (index * 0.2), // Slight downward cascade
-      Math.sin(offsetAngle) * 0.2
+      -0.3 - (index * 0.3), // More pronounced downward cascade
+      Math.sin(offsetAngle) * 0.3 // More 3D depth
     );
   }, [index]);
   
-  // Create mini fork path - short branch from workflow fork
+  // Create mini fork path - branch from workflow fork to full agent position
   const forkPath = useMemo(() => {
     const points = [];
     const start = new THREE.Vector3(0, 0, 0);
-    const end = relativePosition.clone().multiplyScalar(0.7);
+    const end = relativePosition; // Use full relative position, not scaled down
     
-    // Simple curved line from workflow fork to agent node
-    for (let i = 0; i <= 10; i++) {
-      const progress = i / 10;
+    // Curved line from workflow fork to agent node with more pronounced branching
+    for (let i = 0; i <= 15; i++) {
+      const progress = i / 15;
       const point = start.clone().lerp(end, progress);
-      // Add slight curve
-      point.x += Math.sin(progress * Math.PI) * 0.1;
+      // Add more pronounced curve for better visual separation
+      const curveIntensity = Math.sin(progress * Math.PI) * 0.2;
+      point.x += curveIntensity * (end.x > 0 ? 1 : -1); // Curve in direction of branch
+      point.z += curveIntensity * 0.1; // Slight 3D curve
       points.push(point);
     }
     return points;
