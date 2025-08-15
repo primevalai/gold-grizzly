@@ -33,18 +33,21 @@ When agents use this MCP server, they MUST:
 
 **MANDATORY: Three-Aggregate Pattern Compliance**
 
-This MCP server enforces the three-aggregate pattern:
+This MCP server enforces the three-aggregate pattern with specific naming conventions:
 
-1. **Agent Events** (`agent.*`):
-   - MUST include `agent_id` 
+1. **Agent Events** (`agent.<agentName>.*`):
+   - Format: `agent.<agentName>.<eventName>` (e.g., `agent.simonSays.started`, `agent.urlCacher.completed`)
+   - MUST include `agent_id` and `agent_name`
    - SHOULD include `workflow_id` for correlation
    - MAY include `parent_agent_id` for causation
 
 2. **Workflow Events** (`workflow.*`):
+   - Format: `workflow.<eventName>` (e.g., `workflow.started`, `workflow.completed`)
    - MUST include `workflow_id`
    - SHOULD include `user_prompt` for context
 
 3. **System Events** (`system.*`):
+   - Format: `system.<eventName>` (e.g., `system.session_started`)
    - MAY include `session_id` for grouping
    - Used for system-level operations
 
@@ -135,6 +138,7 @@ await mcp_client.call_tool("start_agent", {
 # Use MCP tool for specific events
 await mcp_client.call_tool("emit_agent_event", {
     "agent_id": agent_id,
+    "agent_name": "urlCacher",  # Required for proper event naming
     "event_name": "processing_started",
     "attributes": {
         "file_count": 5,
@@ -148,6 +152,7 @@ await mcp_client.call_tool("emit_agent_event", {
 # Use convenience tool
 await mcp_client.call_tool("complete_agent", {
     "agent_id": agent_id,
+    "agent_name": "urlCacher",  # Required for proper event naming
     "success": True,
     "message": "Successfully processed all files"
 })

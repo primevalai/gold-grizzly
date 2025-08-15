@@ -141,12 +141,11 @@ async def emit_agent_event(request: AgentEventRequest) -> EventResponse:
     client = await get_api_client()
     
     # Construct the full event name
-    event_name = f"agent.{request.event_name}"
+    event_name = f"agent.{request.agent_name}.{request.event_name}"
     
     # Prepare attributes
     attributes = dict(request.attributes)
-    if request.agent_name:
-        attributes["agent_name"] = request.agent_name
+    attributes["agent_name"] = request.agent_name
     
     try:
         response = await client.emit_event(
@@ -272,7 +271,10 @@ async def complete_agent(request: CompleteAgentRequest) -> EventResponse:
     
     agent_request = AgentEventRequest(
         agent_id=request.agent_id,
+        agent_name=request.agent_name,
         event_name=event_name,
+        parent_agent_id=request.parent_agent_id,
+        workflow_id=request.workflow_id,
         attributes={
             "success": request.success,
             "message": request.message or "",

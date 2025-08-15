@@ -29,13 +29,14 @@ async def test_api_client():
             print(f"   Health check failed: {e}")
             return False
         
-        # Test emitting an agent event
+        # Test emitting an agent event (using new naming convention)
         print("2. Testing agent event emission...")
         try:
             response = await client.emit_event(
-                event_name="agent.test_event",
+                event_name="agent.testAgent.test_event",
                 attributes={
                     "test": True,
+                    "agent_name": "testAgent",
                     "timestamp": datetime.now(timezone.utc).isoformat()
                 },
                 aggregate_id="test-agent-12345",
@@ -88,13 +89,13 @@ async def test_workflow_simulation():
             print(f"   Workflow start failed: {e}")
             return False
         
-        # Start agent
+        # Start agent (using new naming convention)
         print(f"2. Starting agent {agent_id}...")
         try:
             response = await client.emit_event(
-                event_name="agent.started",
+                event_name="agent.testAgent.started",
                 attributes={
-                    "agent_name": "test-agent",
+                    "agent_name": "testAgent",
                     "agent_id": agent_id,
                     "start_time": datetime.now(timezone.utc).isoformat()
                 },
@@ -106,12 +107,13 @@ async def test_workflow_simulation():
             print(f"   Agent start failed: {e}")
             return False
         
-        # Agent does work
+        # Agent does work (using new naming convention)
         print("3. Agent performing work...")
         try:
             response = await client.emit_event(
-                event_name="agent.processing",
+                event_name="agent.testAgent.processing",
                 attributes={
+                    "agent_name": "testAgent",
                     "action": "testing_mcp_integration",
                     "progress": 50
                 },
@@ -123,12 +125,13 @@ async def test_workflow_simulation():
             print(f"   Agent work logging failed: {e}")
             return False
         
-        # Complete agent
+        # Complete agent (using new naming convention)
         print("4. Completing agent...")
         try:
             response = await client.emit_event(
-                event_name="agent.completed",
+                event_name="agent.testAgent.completed",
                 attributes={
+                    "agent_name": "testAgent",
                     "success": True,
                     "message": "MCP integration test completed successfully",
                     "end_time": datetime.now(timezone.utc).isoformat()

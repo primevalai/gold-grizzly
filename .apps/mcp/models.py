@@ -9,7 +9,7 @@ class AgentEventRequest(BaseModel):
     """Request model for emitting agent events."""
     agent_id: str = Field(..., description="Unique agent instance ID")
     event_name: str = Field(..., description="Event name (e.g., 'started', 'completed', 'failed')")
-    agent_name: Optional[str] = Field(None, description="Name of the agent type")
+    agent_name: str = Field(..., description="Name of the agent type")
     parent_agent_id: Optional[str] = Field(None, description="Parent agent ID for causation")
     workflow_id: Optional[str] = Field(None, description="Workflow ID for correlation")
     attributes: Dict[str, Any] = Field(default_factory=dict, description="Additional event attributes")
@@ -41,8 +41,11 @@ class StartAgentRequest(BaseModel):
 class CompleteAgentRequest(BaseModel):
     """Request model for completing an agent."""
     agent_id: str = Field(..., description="Agent instance ID to complete")
+    agent_name: str = Field(..., description="Name of the agent type")
     success: bool = Field(True, description="Whether the agent completed successfully")
     message: Optional[str] = Field(None, description="Completion message or error details")
+    workflow_id: Optional[str] = Field(None, description="Workflow ID this agent belongs to")
+    parent_agent_id: Optional[str] = Field(None, description="Parent agent ID if this is a sub-agent")
 
 
 class StartWorkflowRequest(BaseModel):
