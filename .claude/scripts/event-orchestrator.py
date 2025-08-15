@@ -28,7 +28,8 @@ from typing import Dict, List, Any, Optional, Set
 from dataclasses import dataclass
 
 # Add the MCP client path so we can import it
-sys.path.insert(0, str(Path('.apps/mcp')))
+mcp_path = Path(__file__).parent.parent.parent / '.apps' / 'mcp'
+sys.path.insert(0, str(mcp_path))
 from client import EventAPIClient
 
 # Configure logging
