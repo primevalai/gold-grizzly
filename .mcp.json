@@ -2,7 +2,7 @@
   "mcpServers": {
     "eventuali": {
       "type": "stdio",
-      "command": "./start-eventuali-mcp.sh",
+      "command": "./mcp-start-eventuali-server.sh",
       "env": {
         "EVENT_API_URL": "http://127.0.0.1:8765"
       }
