@@ -8,11 +8,11 @@ import { ReactNode } from 'react';
  */
 export function ClientLayout({ children }: { children: ReactNode }) {
   return (
-    <>
+    <div className="flex flex-col h-screen">
       <AppBar />
-      <main>
+      <main className="flex-1 overflow-hidden">
         {children}
       </main>
-    </>
+    </div>
   );
 }
