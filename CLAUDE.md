@@ -9,7 +9,10 @@ This file contains project-specific information and context for Claude Code.
 <project-lexicon>
 **CC**: Claude Code
 **System**: The entirety of the contents of this Claude Code project
-**Event Telemetry**: The .apps/api and .apps/ui servers
+**FlowState App**: The .apps/api, .apps/mcp, and .apps/ui apps
+**FlowState API Server**: The app located in .apps/api 
+**FlowState MCP Server**: The app located in .apps/mcp
+**FlowState UI**: The app located in .apps/ui
 </project-lexicon>
 
 ## Critical Directives

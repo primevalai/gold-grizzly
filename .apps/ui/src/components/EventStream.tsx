@@ -45,16 +45,16 @@ export function EventStream({
   const filteredEvents = useMemo(() => {
     if (aggregateView === 'all') return events;
     return events.filter(e => 
-      e.aggregate.toLowerCase() === aggregateView.toLowerCase()
+      e.aggregate?.toLowerCase() === aggregateView.toLowerCase()
     );
   }, [events, aggregateView]);
 
   // Calculate aggregate counts
   const aggregateCounts = useMemo(() => {
     return {
-      workflow: events.filter(e => e.aggregate.toLowerCase() === 'workflow').length,
-      agent: events.filter(e => e.aggregate.toLowerCase() === 'agent').length,
-      system: events.filter(e => e.aggregate.toLowerCase() === 'system').length
+      workflow: events.filter(e => e.aggregate?.toLowerCase() === 'workflow').length,
+      agent: events.filter(e => e.aggregate?.toLowerCase() === 'agent').length,
+      system: events.filter(e => e.aggregate?.toLowerCase() === 'system').length
     };
   }, [events]);
 
@@ -63,14 +63,14 @@ export function EventStream({
     const agents: Record<string, any> = {};
     
     events
-      .filter(e => e.aggregate.toLowerCase() === 'agent')
+      .filter(e => e.aggregate?.toLowerCase() === 'agent')
       .forEach(event => {
-        const agentId = event.attributes?.AGENT_ID || event.id;
-        const agentName = event.eventName.includes('_') 
+        const agentId = String(event.attributes?.AGENT_ID || event.id || 'unknown');
+        const agentName = event.eventName?.includes('_') 
           ? event.eventName.split('_')[0] 
           : event.eventName;
         
-        if (!agents[agentId]) {
+        if (agentId && agentId !== 'unknown' && !agents[agentId]) {
           agents[agentId] = {
             id: agentId,
             name: agentName,
@@ -82,23 +82,26 @@ export function EventStream({
           };
         }
         
-        agents[agentId].eventCount++;
-        agents[agentId].lastAction = event.eventName;
-        
-        // Update status based on event
-        if (event.eventName.includes('STARTED')) {
-          agents[agentId].status = 'active';
-          agents[agentId].progress = 25;
-        } else if (event.eventName.includes('EXECUTING') || event.eventName.includes('EXECUTED')) {
-          agents[agentId].status = 'active';
-          agents[agentId].progress = 60;
-        } else if (event.eventName.includes('COMPLETED')) {
-          agents[agentId].status = 'completed';
-          agents[agentId].progress = 100;
-          agents[agentId].endTime = event.timestamp;
-        } else if (event.eventName.includes('FAILED')) {
-          agents[agentId].status = 'failed';
-          agents[agentId].endTime = event.timestamp;
+        if (agents[agentId]) {
+          agents[agentId].eventCount++;
+          agents[agentId].lastAction = event.eventName || 'unknown';
+          
+          // Update status based on event
+          const eventName = event.eventName || '';
+          if (eventName.includes('STARTED')) {
+            agents[agentId].status = 'active';
+            agents[agentId].progress = 25;
+          } else if (eventName.includes('EXECUTING') || eventName.includes('EXECUTED')) {
+            agents[agentId].status = 'active';
+            agents[agentId].progress = 60;
+          } else if (eventName.includes('COMPLETED')) {
+            agents[agentId].status = 'completed';
+            agents[agentId].progress = 100;
+            agents[agentId].endTime = event.timestamp;
+          } else if (eventName.includes('FAILED')) {
+            agents[agentId].status = 'failed';
+            agents[agentId].endTime = event.timestamp;
+          }
         }
         
         // Extract parent/child relationships

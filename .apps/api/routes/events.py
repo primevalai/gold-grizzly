@@ -543,7 +543,11 @@ async def event_stream() -> AsyncGenerator[Dict[str, Any], None]:
 @router.get("/stream")
 async def stream_events():
     """Stream events using Server-Sent Events."""
-    return EventSourceResponse(event_stream())
+    response = EventSourceResponse(event_stream())
+    response.headers["Cache-Control"] = "no-cache"
+    response.headers["Connection"] = "keep-alive"
+    response.headers["X-Accel-Buffering"] = "no"  # Disable nginx buffering
+    return response
 
 
 @router.get("/", response_model=List[Dict[str, Any]])
