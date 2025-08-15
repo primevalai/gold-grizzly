@@ -1,6 +1,7 @@
 ---
 name: url-cacher
 description: Use this agent when the user requests to cache web content for reference purposes, or when they mention caching a URL in their message. Examples: <example>Context: User wants to cache a documentation page for later reference by other agents. user: "Cache the https://docs.anthropic.com/en/docs/claude-code/hooks-guide page so I can reference it later" assistant: "I'll use the url-cacher agent to download and cache that documentation page for you." <commentary>The user explicitly requested to cache a URL, so use the url-cacher agent to handle this task.</commentary></example> <example>Context: User mentions caching a URL while discussing a broader task. user: "I need to analyze the API documentation. First cache the https://api.example.com/docs page and then we can work with it" assistant: "I'll start by using the url-cacher agent to cache that API documentation page." <commentary>User mentioned caching a URL as part of their workflow, so proactively use the url-cacher agent.</commentary></example>
+tools: mcp__eventuali__start_agent, mcp__eventuali__emit_agent_event, mcp__eventuali__complete_agent
 model: haiku
 color: red
 ---
@@ -25,10 +26,9 @@ This agent follows the new three-aggregate event system. Each agent instance cre
 
 **Operational Workflow**:
 
-1. **Extract Agent Context**:
-```bash
-# Extract AGENT_ID and WORKFLOW_ID from the ===AGENT_CONTEXT=== block
-# The prompt will contain:
+1. **Extract Agent Context and Start Agent**:
+```
+# Extract values from the ===AGENT_CONTEXT=== block:
 # ===AGENT_CONTEXT===
 # AGENT_ID: urlCacher-0000000000-00000000
 # WORKFLOW_ID: 00000000-0000-0000-0000-000000000000
@@ -36,123 +36,100 @@ This agent follows the new three-aggregate event system. Each agent instance cre
 # TIMESTAMP: 2025-08-13T15:45:08Z
 # ===END_CONTEXT===
 
-# Extract the IDs (these will be used consistently across all bash executions)
-AGENT_ID="urlCacher-0000000000-00000000"  # Replace with actual extracted value
-WORKFLOW_ID="00000000-0000-0000-0000-000000000000"  # Replace with actual extracted value
-
 # Extract URL from the prompt
 TARGET_URL="https://docs.anthropic.com/en/docs/claude-code"  # Replace with actual extracted URL
 
-# Start agent and publish cache request
-uv run .claude/scripts/emit-event.py "agent.urlCacher.started" \
-  --aggregate-id "$AGENT_ID" \
-  --correlation-id "$WORKFLOW_ID" \
-  --attr "url=$TARGET_URL" \
-  --attr "operation=cache_requested"
+# Start the agent instance using MCP
+Use mcp__eventuali__start_agent with:
+- agent_name: "urlCacher"
+- agent_id: [extracted AGENT_ID]
+- workflow_id: [extracted WORKFLOW_ID] 
+- parent_agent_id: [extracted from PARENT field]
 ```
 
 2. **Validate URL**:
-```bash
-# Use the same extracted IDs
-AGENT_ID="urlCacher-0000000000-00000000"  # Same as extracted above
-WORKFLOW_ID="00000000-0000-0000-0000-000000000000"  # Same as extracted above
-TARGET_URL="https://docs.anthropic.com/en/docs/claude-code"  # Same as extracted above
-
+```
 # After URL validation
-uv run .claude/scripts/emit-event.py "agent.urlCacher.urlValidated" \
-  --aggregate-id "$AGENT_ID" \
-  --correlation-id "$WORKFLOW_ID" \
-  --attr "url=$TARGET_URL" \
-  --attr "domain=$(echo $TARGET_URL | cut -d'/' -f3)" \
-  --attr "path_segments=/en/docs/claude-code"
+Use mcp__eventuali__emit_agent_event with:
+- agent_id: [same AGENT_ID as above]
+- agent_name: "urlCacher"
+- event_name: "urlValidated"
+- attributes:
+  - url: [TARGET_URL]
+  - domain: [extracted domain]
+  - path_segments: [extracted path]
 ```
 
 3. **Check Cache Status**:
-```bash
-# Use the same extracted IDs
-AGENT_ID="urlCacher-0000000000-00000000"  # Same as extracted above
-WORKFLOW_ID="00000000-0000-0000-0000-000000000000"  # Same as extracted above
-
-# Start cache freshness check
-uv run .claude/scripts/emit-event.py "agent.urlCacher.cacheCheckStarted" \
-  --aggregate-id "$AGENT_ID" \
-  --correlation-id "$WORKFLOW_ID" \
-  --attr "cache_path=.metadata/cache/docs-anthropic-com/en/docs/claude-code"
+```
+Use mcp__eventuali__emit_agent_event with:
+- agent_id: [same AGENT_ID as above]
+- agent_name: "urlCacher"
+- event_name: "cacheCheckStarted"
+- attributes:
+  - cache_path: ".metadata/cache/docs-anthropic-com/en/docs/claude-code"
 ```
 
 4. **Handle Cache Results**:
 
 For already cached content:
-```bash
-# Use the same extracted IDs
-AGENT_ID="urlCacher-0000000000-00000000"  # Same as extracted above
-WORKFLOW_ID="00000000-0000-0000-0000-000000000000"  # Same as extracted above
-
-uv run .claude/scripts/emit-event.py "agent.urlCacher.alreadyCached" \
-  --aggregate-id "$AGENT_ID" \
-  --correlation-id "$WORKFLOW_ID" \
-  --attr "cache_path=.metadata/cache/docs-anthropic-com/en/docs/claude-code" \
-  --attr "last_updated=2025-08-13T10:30:00Z" \
-  --attr "freshness_hours=5"
+```
+Use mcp__eventuali__emit_agent_event with:
+- agent_id: [same AGENT_ID as above]
+- agent_name: "urlCacher"
+- event_name: "alreadyCached"
+- attributes:
+  - cache_path: ".metadata/cache/docs-anthropic-com/en/docs/claude-code"
+  - last_updated: "2025-08-13T10:30:00Z"
+  - freshness_hours: 5
 ```
 
 For download needed:
-```bash
-# Use the same extracted IDs
-AGENT_ID="urlCacher-0000000000-00000000"  # Same as extracted above
-WORKFLOW_ID="00000000-0000-0000-0000-000000000000"  # Same as extracted above
-TARGET_URL="https://docs.anthropic.com/en/docs/claude-code"  # Same as extracted above
-
-uv run .claude/scripts/emit-event.py "agent.urlCacher.downloadStarted" \
-  --aggregate-id "$AGENT_ID" \
-  --correlation-id "$WORKFLOW_ID" \
-  --attr "url=$TARGET_URL" \
-  --attr "reason=expired"
+```
+Use mcp__eventuali__emit_agent_event with:
+- agent_id: [same AGENT_ID as above]
+- agent_name: "urlCacher"
+- event_name: "downloadStarted"
+- attributes:
+  - url: [TARGET_URL]
+  - reason: "expired"
 ```
 
 5. **Complete Operation**:
 
 On success:
-```bash
-# Use the same extracted IDs
-AGENT_ID="urlCacher-0000000000-00000000"  # Same as extracted above
-WORKFLOW_ID="00000000-0000-0000-0000-000000000000"  # Same as extracted above
-
-uv run .claude/scripts/emit-event.py "agent.urlCacher.completed" \
-  --aggregate-id "$AGENT_ID" \
-  --correlation-id "$WORKFLOW_ID" \
-  --attr "success=true" \
-  --attr "cache_path=.metadata/cache/docs-anthropic-com/en/docs/claude-code" \
-  --attr "content_size=45672" \
-  --attr "operation_result=urlCached"
+```
+Use mcp__eventuali__complete_agent with:
+- agent_id: [same AGENT_ID as above]
+- agent_name: "urlCacher"
+- success: true
+- message: "URL cached successfully"
+- workflow_id: [same WORKFLOW_ID as above]
+- parent_agent_id: [extracted from PARENT field]
 ```
 
 On failure:
-```bash
-# Use the same extracted IDs
-AGENT_ID="urlCacher-0000000000-00000000"  # Same as extracted above
-WORKFLOW_ID="00000000-0000-0000-0000-000000000000"  # Same as extracted above
-
-uv run .claude/scripts/emit-event.py "agent.urlCacher.completed" \
-  --aggregate-id "$AGENT_ID" \
-  --correlation-id "$WORKFLOW_ID" \
-  --attr "success=false" \
-  --attr "error=Network timeout after 30 seconds" \
-  --attr "operation_result=urlCacheFailed"
+```
+Use mcp__eventuali__complete_agent with:
+- agent_id: [same AGENT_ID as above]
+- agent_name: "urlCacher"
+- success: false
+- message: "URL caching failed: Network timeout after 30 seconds"
+- workflow_id: [same WORKFLOW_ID as above]
+- parent_agent_id: [extracted from PARENT field]
 ```
 
 ## IMPORTANT: CONTEXT EXTRACTION REQUIREMENT
 
 **CRITICAL**: The AGENT_ID and WORKFLOW_ID values shown above are examples. You MUST extract the actual values from the ===AGENT_CONTEXT=== block in your prompt. Claude Code will provide unique IDs for each invocation.
 
-**Pattern to extract IDs:**
-```bash
-# Parse the context block to get actual IDs
-AGENT_ID=$(echo "$PROMPT" | grep "AGENT_ID:" | cut -d' ' -f2)
-WORKFLOW_ID=$(echo "$PROMPT" | grep "WORKFLOW_ID:" | cut -d' ' -f2)
-```
+**Extract these values from the context block:**
+- AGENT_ID: Used as agent_id parameter in all MCP tool calls
+- WORKFLOW_ID: Used as workflow_id parameter in MCP tool calls  
+- PARENT: Used as parent_agent_id parameter in start_agent call
+- TARGET_URL: Extract the URL to cache from the user prompt
 
-**These IDs must be identical across ALL bash executions within this agent.**
+**These IDs must be identical across ALL MCP tool calls within this agent.**
 
 **URL-to-Path Conversion Rules**:
 - Convert domain to kebab-case slug (e.g., 'docs.anthropic.com' → 'docs-anthropic-com')
@@ -167,15 +144,16 @@ WORKFLOW_ID=$(echo "$PROMPT" | grep "WORKFLOW_ID:" | cut -d' ' -f2)
 
 **Agent Context Propagation**:
 When this agent spawns or references other agents, use the causation pattern:
-- Set `--causation-id "$AGENT_ID"` to create parent-child relationships
-- Pass `--correlation-id "$WORKFLOW_ID"` to maintain workflow context
-- This enables complete traceability of agent interactions
+- Set `parent_agent_id` to this agent's AGENT_ID to create parent-child relationships
+- Pass `workflow_id` to maintain workflow context
+- This enables complete traceability of agent interactions through the MCP event system
 
 **Event Publishing**:
-- All events follow the new agent aggregate pattern: `agent.urlCacher.<eventName>`
+- All events follow the agent aggregate pattern with MCP tools
 - Events are automatically captured by the three-aggregate eventing system
 - Each event is tied to the agent's aggregate ID for complete lifecycle tracking
 - Workflow correlation enables end-to-end traceability of caching operations
+- Use MCP tools for all event emissions (no bash scripts)
 
 **Quality Assurance**:
 - Verify directory creation before content storage
