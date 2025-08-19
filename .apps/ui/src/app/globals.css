@@ -22,23 +22,23 @@
 }
 
 .dark {
-  --background: 30 22 9;
-  --foreground: 45 15 94;
-  --card: 30 22 9;
-  --card-foreground: 45 15 94;
-  --primary: 51 83 54;
-  --primary-foreground: 30 22 9;
-  --secondary: 30 22 14;
-  --secondary-foreground: 45 15 94;
-  --muted: 30 22 14;
-  --muted-foreground: 30 15 65;
-  --accent: 45 85 37;
-  --accent-foreground: 45 15 94;
-  --destructive: 0 84 60;
-  --destructive-foreground: 45 15 94;
-  --border: 30 22 14;
-  --input: 30 22 14;
-  --ring: 51 83 54;
+  --background: 220 100 3;
+  --foreground: 180 100 85;
+  --card: 220 50 5;
+  --card-foreground: 180 100 85;
+  --primary: 180 100 50;
+  --primary-foreground: 220 100 3;
+  --secondary: 220 80 8;
+  --secondary-foreground: 180 100 85;
+  --muted: 220 80 8;
+  --muted-foreground: 180 50 65;
+  --accent: 180 100 50;
+  --accent-foreground: 220 100 3;
+  --destructive: 0 100 50;
+  --destructive-foreground: 180 100 85;
+  --border: 180 100 20;
+  --input: 220 50 5;
+  --ring: 180 100 50;
 }
 
 body {
@@ -53,18 +53,20 @@ body {
   height: 16px;
   width: 16px;
   border-radius: 50%;
-  background: #00ccff;
+  background: #00ffff;
   cursor: pointer;
-  border: 2px solid #ffffff;
+  border: 2px solid #00ffff;
+  box-shadow: 0 0 10px #00ffff;
 }
 
 .slider::-moz-range-thumb {
   height: 16px;
   width: 16px;
   border-radius: 50%;
-  background: #00ccff;
+  background: #00ffff;
   cursor: pointer;
-  border: 2px solid #ffffff;
+  border: 2px solid #00ffff;
+  box-shadow: 0 0 10px #00ffff;
 }
 
 /* Custom scrollbar for EventRiver */
@@ -87,11 +89,11 @@ body {
 }
 
 .dark .scrollbar-thin::-webkit-scrollbar-thumb {
-  background: rgba(75, 85, 99, 0.5);
+  background: rgba(0, 255, 255, 0.3);
 }
 
 .dark .scrollbar-thin::-webkit-scrollbar-thumb:hover {
-  background: rgba(75, 85, 99, 0.7);
+  background: rgba(0, 255, 255, 0.5);
 }
 
 /* Gradient utilities for river flow */
@@ -106,6 +108,83 @@ body {
 /* Smooth scrolling */
 .smooth-scroll {
   scroll-behavior: smooth;
+}
+
+/* Futuristic card styles */
+.dark [data-slot="card"] {
+  position: relative;
+}
+
+.dark [data-slot="card"]::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(135deg, 
+    transparent 0%, 
+    rgba(0, 255, 255, 0.05) 25%, 
+    transparent 50%, 
+    rgba(0, 255, 255, 0.05) 75%, 
+    transparent 100%
+  );
+  border-radius: inherit;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.dark [data-slot="card"]:hover::before {
+  opacity: 1;
+}
+
+/* Subtle inner glow for cards */
+.dark [data-slot="card"]::after {
+  content: '';
+  position: absolute;
+  top: 1px;
+  left: 1px;
+  right: 1px;
+  bottom: 1px;
+  background: transparent;
+  border-radius: calc(0.75rem - 1px);
+  box-shadow: inset 0 0 20px rgba(0, 255, 255, 0.1);
+  pointer-events: none;
+}
+
+/* Futuristic text effects */
+.dark-text-shadow-cyan {
+  text-shadow: 0 0 10px rgba(0, 255, 255, 0.3);
+}
+
+/* Card border animation */
+.dark [data-slot="card"] {
+  background: linear-gradient(135deg, 
+    hsl(var(--card)) 0%,
+    hsl(var(--card)) 70%,
+    rgba(0, 255, 255, 0.02) 100%
+  );
+}
+
+/* Futuristic dividers */
+.dark [data-slot="card-header"].border-b {
+  border-bottom: 1px solid rgba(0, 255, 255, 0.2);
+  position: relative;
+}
+
+.dark [data-slot="card-header"].border-b::after {
+  content: '';
+  position: absolute;
+  bottom: -1px;
+  left: 0;
+  width: 100%;
+  height: 1px;
+  background: linear-gradient(90deg, 
+    transparent 0%, 
+    rgba(0, 255, 255, 0.5) 50%, 
+    transparent 100%
+  );
 }
 
 /* River flow animations */

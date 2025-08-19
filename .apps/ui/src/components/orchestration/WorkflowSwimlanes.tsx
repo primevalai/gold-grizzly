@@ -180,10 +180,13 @@ function groupEventsByWorkflow(events: EventData[]): WorkflowGroup[] {
       group.startTime = eventTime;
     }
 
-    // Count unique agents
+    // Count unique agents - handle both direct agent_id and aggregate_id for agent events
     const agentIds = new Set(group.events
-      .filter(e => e.agent_id)
-      .map(e => e.agent_id));
+      .map(e => {
+        if (e.aggregate_type === 'agent_aggregate') return e.aggregate_id;
+        return e.agent_id || (e.attributes?.agent_id as string) || (e.attributes?.AGENT_ID as string);
+      })
+      .filter(Boolean));
     group.agentCount = agentIds.size;
 
     // Determine status

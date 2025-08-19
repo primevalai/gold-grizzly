@@ -135,7 +135,6 @@ export function useEventStream3D(url: string) {
       eventSourceRef.current = eventSource;
 
       eventSource.onopen = () => {
-        console.log('🔌 UI EventSource: Connection opened successfully');
         setConnectionStatus('connected');
       };
 
@@ -143,7 +142,6 @@ export function useEventStream3D(url: string) {
       eventSource.addEventListener('event_created', (event) => {
         try {
           const rawEvent = JSON.parse(event.data);
-          console.log('🔍 UI: Raw SSE event_created received:', rawEvent);
           
           // Map API event format to UI Event3D format
           const parsedEvent: Event3D = {
@@ -154,7 +152,6 @@ export function useEventStream3D(url: string) {
             attributes: rawEvent.attributes || {}
           };
           
-          console.log('📦 UI: Parsed event for 3D:', parsedEvent);
           
           setEvents(currentEvents => {
             // Add river position to the new event
@@ -212,7 +209,6 @@ export function useEventStream3D(url: string) {
       eventSource.onmessage = (event) => {
         try {
           const rawEvent = JSON.parse(event.data);
-          console.log('🔍 UI: Raw SSE unnamed message received:', rawEvent);
           
           // Skip heartbeat events but log them
           if (rawEvent.status === 'connected') {
@@ -228,7 +224,6 @@ export function useEventStream3D(url: string) {
             attributes: rawEvent.attributes || {}
           };
           
-          console.log('📦 UI: Parsed unnamed event for 3D:', parsedEvent);
           
           setEvents(currentEvents => {
             // Add river position to the new event
@@ -274,8 +269,6 @@ export function useEventStream3D(url: string) {
 
       eventSource.onerror = (error) => {
         console.error('💥 UI EventSource: Error occurred', error);
-        console.log('💥 UI EventSource: Ready state:', eventSource.readyState);
-        console.log('💥 UI EventSource: URL:', url);
         setConnectionStatus('error');
       };
 

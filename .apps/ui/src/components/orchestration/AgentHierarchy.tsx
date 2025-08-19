@@ -118,26 +118,10 @@ function AgentTreeNode({
         className="flex items-center gap-2 p-2 rounded-lg hover:bg-accent/50 transition-colors"
         style={{ marginLeft: indentWidth }}
       >
-        {/* Expand/collapse button */}
-        {hasChildren ? (
-          <Button
-            variant="ghost"
-            size="sm"
-            className="h-6 w-6 p-0"
-            onClick={onToggle}
-          >
-            <span className="text-xs">
-              {expanded ? "▼" : "▶"}
-            </span>
-          </Button>
-        ) : (
-          <div className="w-6" />
-        )}
-
-        {/* Connection line */}
-        {node.depth > 0 && (
-          <div className="w-4 h-px bg-border" />
-        )}
+        {/* Workflow indicator instead of expand/collapse */}
+        <div className="w-6 h-6 flex items-center justify-center">
+          <div className="w-2 h-2 rounded-full bg-accent" title={`Workflow: ${node.workflowId?.slice(0, 8) || 'none'}`} />
+        </div>
 
         {/* Status indicator */}
         <motion.div
@@ -178,26 +162,6 @@ function AgentTreeNode({
         </Badge>
       </motion.div>
 
-      {/* Child nodes */}
-      {hasChildren && expanded && (
-        <motion.div
-          initial={{ opacity: 0, height: 0 }}
-          animate={{ opacity: 1, height: 'auto' }}
-          exit={{ opacity: 0, height: 0 }}
-          transition={{ duration: 0.2 }}
-        >
-          {node.children.map((child) => (
-            <AgentTreeNode
-              key={child.agentId}
-              node={child}
-              expanded={expandedNodes.has(child.agentId)}
-              onToggle={() => onToggleNode(child.agentId)}
-              expandedNodes={expandedNodes}
-              onToggleNode={onToggleNode}
-            />
-          ))}
-        </motion.div>
-      )}
     </div>
   );
 }
@@ -210,8 +174,11 @@ function buildAgentTree(events: EventData[]): AgentNode[] {
 
   // First pass: create all agent nodes
   events.forEach(event => {
-    // For agent events, use aggregate_id as the agent_id
-    const agentId = event.aggregate_type === 'agent_aggregate' ? event.aggregate_id : event.agent_id;
+    // For agent events, use aggregate_id as the agent_id, otherwise use agent_id from attributes or direct field
+    const agentId = event.aggregate_type === 'agent_aggregate' 
+      ? event.aggregate_id 
+      : event.agent_id || (event.attributes?.agent_id as string) || (event.attributes?.AGENT_ID as string);
+    
     if (!agentId) return;
 
     if (!agentMap.has(agentId)) {
@@ -221,8 +188,8 @@ function buildAgentTree(events: EventData[]): AgentNode[] {
       agentMap.set(agentId, {
         agentId: agentId,
         agentName: agentName,
-        parentAgentId: event.parent_agent_id || (event.attributes?.parent_agent_id as string),
-        workflowId: event.workflow_id || (event.attributes?.workflow_id as string),
+        parentAgentId: event.parent_agent_id || (event.attributes?.parent_agent_id as string) || (event.attributes?.PARENT as string),
+        workflowId: event.workflow_id || (event.attributes?.workflow_id as string) || (event.attributes?.WORKFLOW_ID as string),
         events: [],
         children: [],
         status: 'idle',
@@ -258,17 +225,26 @@ function buildAgentTree(events: EventData[]): AgentNode[] {
     }
   });
 
-  // Second pass: build parent-child relationships and calculate depths
+  // Second pass: group by workflow and parent relationships
+  const workflowGroups = new Map<string, AgentNode[]>();
   const rootNodes: AgentNode[] = [];
   
   agentMap.forEach(node => {
-    if (node.parentAgentId && agentMap.has(node.parentAgentId)) {
-      const parent = agentMap.get(node.parentAgentId)!;
-      parent.children.push(node);
-      node.depth = parent.depth + 1;
-    } else {
-      rootNodes.push(node);
+    // Group sibling agents by workflow instead of nesting
+    const workflowId = node.workflowId || 'no-workflow';
+    
+    if (!workflowGroups.has(workflowId)) {
+      workflowGroups.set(workflowId, []);
     }
+    
+    // All agents in the same workflow are siblings (depth 0)
+    node.depth = 0;
+    workflowGroups.get(workflowId)!.push(node);
+  });
+  
+  // Convert workflow groups to flat root nodes (no nesting)
+  workflowGroups.forEach(agents => {
+    rootNodes.push(...agents);
   });
 
   // Sort by last activity (newest first)

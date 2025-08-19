@@ -1,0 +1,476 @@
+{
+  "time_range": {
+    "date": "2025-08-17",
+    "description": "All events from August 17th, 2025"
+  },
+  "workflows": {
+    "95f93a67-9817-481e-bc3e-c1c06e0bdcc2": {
+      "workflow_id": "95f93a67-9817-481e-bc3e-c1c06e0bdcc2",
+      "description": "Parallel orchestration re-run with 4 agent tasks",
+      "start_time": "2025-08-17T20:03:12.026282Z",
+      "end_time": "2025-08-17T20:03:54.960747Z",
+      "duration": "42.934 seconds",
+      "agents": [
+        {
+          "agent_id": "lolRecorder-1755460987-04f61cf9",
+          "agent_type": "lol-recorder",
+          "status": "completed"
+        },
+        {
+          "agent_id": "simonSays-1755460988-2edb7873",
+          "agent_type": "simon-says",
+          "status": "completed"
+        },
+        {
+          "agent_id": "simonSays-1755460988-34ee6be1",
+          "agent_type": "simon-says",
+          "status": "completed"
+        },
+        {
+          "agent_id": "lol-recorder-1755460989-55480fde",
+          "agent_type": "lol-recorder",
+          "status": "completed"
+        }
+      ],
+      "event_count": 18
+    }
+  },
+  "events": [
+    {
+      "event_id": "599db3b5-f6f7-418f-92d2-1eedb813eddf",
+      "aggregate_id": "lol-recorder-1755460989-55480fde",
+      "aggregate_type": "agent_aggregate",
+      "event_type": "agent.lolRecorder.completed",
+      "event_name": "agent.lolRecorder.completed",
+      "timestamp": "2025-08-17T20:03:54.960747Z",
+      "attributes": {
+        "agent_name": "lolRecorder",
+        "end_time": "2025-08-17T20:03:54.958111+00:00",
+        "message": "LOL moment successfully preserved with full context",
+        "success": true
+      },
+      "agent_name": "lolRecorder",
+      "agent_id": "lol-recorder-1755460989-55480fde",
+      "parent_agent_id": "",
+      "workflow_id": "95f93a67-9817-481e-bc3e-c1c06e0bdcc2",
+      "user_prompt": null,
+      "session_id": null,
+      "correlation_id": "95f93a67-9817-481e-bc3e-c1c06e0bdcc2",
+      "causation_id": null
+    },
+    {
+      "event_id": "7f18fccd-9524-4918-8add-3d4c53e4ca64",
+      "aggregate_id": "lolRecorder-1755460987-04f61cf9",
+      "aggregate_type": "agent_aggregate",
+      "event_type": "agent.lolRecorder.completed",
+      "event_name": "agent.lolRecorder.completed",
+      "timestamp": "2025-08-17T20:03:53.326934Z",
+      "attributes": {
+        "agent_name": "lolRecorder",
+        "end_time": "2025-08-17T20:03:53.324306+00:00",
+        "message": "LOL moment successfully preserved with full context - captured the delicious irony of being amazed by agent coordination while being served by coordinating agents",
+        "success": true
+      },
+      "agent_name": "lolRecorder",
+      "agent_id": "lolRecorder-1755460987-04f61cf9",
+      "parent_agent_id": "",
+      "workflow_id": "95f93a67-9817-481e-bc3e-c1c06e0bdcc2",
+      "user_prompt": null,
+      "session_id": null,
+      "correlation_id": "95f93a67-9817-481e-bc3e-c1c06e0bdcc2",
+      "causation_id": null
+    },
+    {
+      "event_id": "771adbfb-d757-475a-87a1-bfbb747a55b1",
+      "aggregate_id": "lol-recorder-1755460989-55480fde",
+      "aggregate_type": "agent_aggregate",
+      "event_type": "agent.lolRecorder.momentRecorded",
+      "event_name": "agent.lolRecorder.momentRecorded",
+      "timestamp": "2025-08-17T20:03:51.020555Z",
+      "attributes": {
+        "agent_name": "lolRecorder",
+        "documentation_complete": true,
+        "file_path": "/home/user01/syncs/github/primevalai/gold-grizzly/.apps/api/.lol-agent/lol-20250817-orchestration-success.json",
+        "file_size": 3456,
+        "humor_category": "delighted_success",
+        "trigger_phrase": "lol, this orchestration system is working amazingly well with parallel tasks"
+      },
+      "agent_name": "lolRecorder",
+      "agent_id": "lol-recorder-1755460989-55480fde",
+      "parent_agent_id": "",
+      "workflow_id": "95f93a67-9817-481e-bc3e-c1c06e0bdcc2",
+      "user_prompt": null,
+      "session_id": null,
+      "correlation_id": "95f93a67-9817-481e-bc3e-c1c06e0bdcc2",
+      "causation_id": null
+    },
+    {
+      "event_id": "faec85d0-0068-4635-8ab7-743a3b52144b",
+      "aggregate_id": "lolRecorder-1755460987-04f61cf9",
+      "aggregate_type": "agent_aggregate",
+      "event_type": "agent.lolRecorder.momentRecorded",
+      "event_name": "agent.lolRecorder.momentRecorded",
+      "timestamp": "2025-08-17T20:03:49.308040Z",
+      "attributes": {
+        "agent_name": "lolRecorder",
+        "documentation_complete": true,
+        "file_path": "/home/user01/syncs/github/primevalai/gold-grizzly/.apps/api/.lol-agent/lol-20250817-agent-coordination-amazement.json",
+        "file_size": 3567,
+        "humor_category": "amazement_humor",
+        "irony_level": "high",
+        "meta_recursive": true,
+        "moment_type": "positive_system_amazement",
+        "trigger_phrase": "This is absolutely ridiculous how smoothly these agents coordinate together"
+      },
+      "agent_name": "lolRecorder",
+      "agent_id": "lolRecorder-1755460987-04f61cf9",
+      "parent_agent_id": "",
+      "workflow_id": "95f93a67-9817-481e-bc3e-c1c06e0bdcc2",
+      "user_prompt": null,
+      "session_id": null,
+      "correlation_id": "95f93a67-9817-481e-bc3e-c1c06e0bdcc2",
+      "causation_id": null
+    },
+    {
+      "event_id": "624ab5c6-a103-46d6-b5e5-d3eafa677ed0",
+      "aggregate_id": "simonSays-1755460988-2edb7873",
+      "aggregate_type": "agent_aggregate",
+      "event_type": "agent.simonSays.completed",
+      "event_name": "agent.simonSays.completed",
+      "timestamp": "2025-08-17T20:03:24.472663Z",
+      "attributes": {
+        "agent_name": "simonSays",
+        "end_time": "2025-08-17T20:03:24.470557+00:00",
+        "message": "Simon says command executed successfully",
+        "success": true
+      },
+      "agent_name": "simonSays",
+      "agent_id": "simonSays-1755460988-2edb7873",
+      "parent_agent_id": "main-claude-code",
+      "workflow_id": "95f93a67-9817-481e-bc3e-c1c06e0bdcc2",
+      "user_prompt": null,
+      "session_id": null,
+      "correlation_id": "95f93a67-9817-481e-bc3e-c1c06e0bdcc2",
+      "causation_id": "main-claude-code"
+    },
+    {
+      "event_id": "1187b417-0b0f-4a0c-bb44-30a798c83069",
+      "aggregate_id": "simonSays-1755460988-34ee6be1",
+      "aggregate_type": "agent_aggregate",
+      "event_type": "agent.simonSays.completed",
+      "event_name": "agent.simonSays.completed",
+      "timestamp": "2025-08-17T20:03:24.408624Z",
+      "attributes": {
+        "agent_name": "simonSays",
+        "end_time": "2025-08-17T20:03:24.406367+00:00",
+        "message": "Simon says command executed successfully",
+        "success": true
+      },
+      "agent_name": "simonSays",
+      "agent_id": "simonSays-1755460988-34ee6be1",
+      "parent_agent_id": "",
+      "workflow_id": "95f93a67-9817-481e-bc3e-c1c06e0bdcc2",
+      "user_prompt": null,
+      "session_id": null,
+      "correlation_id": "95f93a67-9817-481e-bc3e-c1c06e0bdcc2",
+      "causation_id": null
+    },
+    {
+      "event_id": "0011a0a8-1291-461f-bcff-fd6a2c3cdf84",
+      "aggregate_id": "lol-recorder-1755460989-55480fde",
+      "aggregate_type": "agent_aggregate",
+      "event_type": "agent.lolRecorder.folderCreated",
+      "event_name": "agent.lolRecorder.folderCreated",
+      "timestamp": "2025-08-17T20:03:24.276348Z",
+      "attributes": {
+        "agent_name": "lolRecorder",
+        "already_existed": true,
+        "folder_path": ".lol-agent"
+      },
+      "agent_name": "lolRecorder",
+      "agent_id": "lol-recorder-1755460989-55480fde",
+      "parent_agent_id": "",
+      "workflow_id": "95f93a67-9817-481e-bc3e-c1c06e0bdcc2",
+      "user_prompt": null,
+      "session_id": null,
+      "correlation_id": "95f93a67-9817-481e-bc3e-c1c06e0bdcc2",
+      "causation_id": null
+    },
+    {
+      "event_id": "482a6e48-9f94-470c-a86a-6a2a024f5da7",
+      "aggregate_id": "lolRecorder-1755460987-04f61cf9",
+      "aggregate_type": "agent_aggregate",
+      "event_type": "agent.lolRecorder.folderCreated",
+      "event_name": "agent.lolRecorder.folderCreated",
+      "timestamp": "2025-08-17T20:03:23.819014Z",
+      "attributes": {
+        "agent_name": "lolRecorder",
+        "already_existed": true,
+        "folder_path": ".lol-agent"
+      },
+      "agent_name": "lolRecorder",
+      "agent_id": "lolRecorder-1755460987-04f61cf9",
+      "parent_agent_id": "",
+      "workflow_id": "95f93a67-9817-481e-bc3e-c1c06e0bdcc2",
+      "user_prompt": null,
+      "session_id": null,
+      "correlation_id": "95f93a67-9817-481e-bc3e-c1c06e0bdcc2",
+      "causation_id": null
+    },
+    {
+      "event_id": "37a688fa-9bcb-40b4-850d-8d8dd5e8979b",
+      "aggregate_id": "simonSays-1755460988-2edb7873",
+      "aggregate_type": "agent_aggregate",
+      "event_type": "agent.simonSays.executed",
+      "event_name": "agent.simonSays.executed",
+      "timestamp": "2025-08-17T20:03:21.007919Z",
+      "attributes": {
+        "agent_name": "simonSays",
+        "command": "create a file named test2.txt with content 'Hello from Simon 2'",
+        "execution_status": "simulated",
+        "response_ready": true
+      },
+      "agent_name": "simonSays",
+      "agent_id": "simonSays-1755460988-2edb7873",
+      "parent_agent_id": "main-claude-code",
+      "workflow_id": "95f93a67-9817-481e-bc3e-c1c06e0bdcc2",
+      "user_prompt": null,
+      "session_id": null,
+      "correlation_id": "95f93a67-9817-481e-bc3e-c1c06e0bdcc2",
+      "causation_id": "main-claude-code"
+    },
+    {
+      "event_id": "bdfa6a12-a505-486d-baed-c495cbed6e51",
+      "aggregate_id": "simonSays-1755460988-34ee6be1",
+      "aggregate_type": "agent_aggregate",
+      "event_type": "agent.simonSays.executed",
+      "event_name": "agent.simonSays.executed",
+      "timestamp": "2025-08-17T20:03:20.791171Z",
+      "attributes": {
+        "agent_name": "simonSays",
+        "command": "create a file named test1.txt with content 'Hello from Simon 1'",
+        "execution_status": "simulated",
+        "response_ready": true
+      },
+      "agent_name": "simonSays",
+      "agent_id": "simonSays-1755460988-34ee6be1",
+      "parent_agent_id": "",
+      "workflow_id": "95f93a67-9817-481e-bc3e-c1c06e0bdcc2",
+      "user_prompt": null,
+      "session_id": null,
+      "correlation_id": "95f93a67-9817-481e-bc3e-c1c06e0bdcc2",
+      "causation_id": null
+    },
+    {
+      "event_id": "3f77ff06-1f44-40a6-a7fc-5e255bef0a01",
+      "aggregate_id": "lol-recorder-1755460989-55480fde",
+      "aggregate_type": "agent_aggregate",
+      "event_type": "agent.lolRecorder.contextGathered",
+      "event_name": "agent.lolRecorder.contextGathered",
+      "timestamp": "2025-08-17T20:03:18.234797Z",
+      "attributes": {
+        "agent_name": "lolRecorder",
+        "conversation_turns": 1,
+        "humor_category": "delighted_success",
+        "metadata_fields_collected": 15,
+        "project_context_available": true,
+        "technical_context_available": true,
+        "trigger_phrase": "lol, this orchestration system is working amazingly well with parallel tasks"
+      },
+      "agent_name": "lolRecorder",
+      "agent_id": "lol-recorder-1755460989-55480fde",
+      "parent_agent_id": "",
+      "workflow_id": "95f93a67-9817-481e-bc3e-c1c06e0bdcc2",
+      "user_prompt": null,
+      "session_id": null,
+      "correlation_id": "95f93a67-9817-481e-bc3e-c1c06e0bdcc2",
+      "causation_id": null
+    },
+    {
+      "event_id": "a40c0ce3-3ccf-4d1c-b2f3-41ed3eb06965",
+      "aggregate_id": "lolRecorder-1755460987-04f61cf9",
+      "aggregate_type": "agent_aggregate",
+      "event_type": "agent.lolRecorder.contextGathered",
+      "event_name": "agent.lolRecorder.contextGathered",
+      "timestamp": "2025-08-17T20:03:17.501834Z",
+      "attributes": {
+        "agent_name": "lolRecorder",
+        "context_richness": "high",
+        "conversation_turns": 1,
+        "git_status_available": true,
+        "humor_category": "amazement_humor",
+        "metadata_fields_collected": 15,
+        "project_context_available": true,
+        "project_type": "multi_app_system",
+        "technical_context_available": true,
+        "trigger_phrase": "This is absolutely ridiculous how smoothly these agents coordinate together"
+      },
+      "agent_name": "lolRecorder",
+      "agent_id": "lolRecorder-1755460987-04f61cf9",
+      "parent_agent_id": "",
+      "workflow_id": "95f93a67-9817-481e-bc3e-c1c06e0bdcc2",
+      "user_prompt": null,
+      "session_id": null,
+      "correlation_id": "95f93a67-9817-481e-bc3e-c1c06e0bdcc2",
+      "causation_id": null
+    },
+    {
+      "event_id": "b7f5e96c-3b54-42c4-a662-b0e72dfb8d6e",
+      "aggregate_id": "simonSays-1755460988-34ee6be1",
+      "aggregate_type": "agent_aggregate",
+      "event_type": "agent.simonSays.commandReceived",
+      "event_name": "agent.simonSays.commandReceived",
+      "timestamp": "2025-08-17T20:03:17.377931Z",
+      "attributes": {
+        "agent_name": "simonSays",
+        "command_length": 58,
+        "simon_command": "create a file named test1.txt with content 'Hello from Simon 1'",
+        "user_prompt": "Simon says create a file named test1.txt with content 'Hello from Simon 1'"
+      },
+      "agent_name": "simonSays",
+      "agent_id": "simonSays-1755460988-34ee6be1",
+      "parent_agent_id": "",
+      "workflow_id": "95f93a67-9817-481e-bc3e-c1c06e0bdcc2",
+      "user_prompt": null,
+      "session_id": null,
+      "correlation_id": "95f93a67-9817-481e-bc3e-c1c06e0bdcc2",
+      "causation_id": null
+    },
+    {
+      "event_id": "1253add2-122e-4acd-8954-7f23cfb0e276",
+      "aggregate_id": "simonSays-1755460988-2edb7873",
+      "aggregate_type": "agent_aggregate",
+      "event_type": "agent.simonSays.commandReceived",
+      "event_name": "agent.simonSays.commandReceived",
+      "timestamp": "2025-08-17T20:03:17.270574Z",
+      "attributes": {
+        "agent_name": "simonSays",
+        "command_length": 60,
+        "simon_command": "create a file named test2.txt with content 'Hello from Simon 2'",
+        "user_prompt": "Simon says create a file named test2.txt with content 'Hello from Simon 2'"
+      },
+      "agent_name": "simonSays",
+      "agent_id": "simonSays-1755460988-2edb7873",
+      "parent_agent_id": "main-claude-code",
+      "workflow_id": "95f93a67-9817-481e-bc3e-c1c06e0bdcc2",
+      "user_prompt": null,
+      "session_id": null,
+      "correlation_id": "95f93a67-9817-481e-bc3e-c1c06e0bdcc2",
+      "causation_id": "main-claude-code"
+    },
+    {
+      "event_id": "4e9bcc4e-cb98-458b-aa15-d45f4cb9e517",
+      "aggregate_id": "lol-recorder-1755460989-55480fde",
+      "aggregate_type": "agent_aggregate",
+      "event_type": "agent.lolRecorder.started",
+      "event_name": "agent.lolRecorder.started",
+      "timestamp": "2025-08-17T20:03:13.478325Z",
+      "attributes": {
+        "agent_id": "lol-recorder-1755460989-55480fde",
+        "agent_name": "lolRecorder",
+        "parent_agent_id": "main-claude-code",
+        "start_time": "2025-08-17T20:03:13.476299+00:00",
+        "workflow_id": "95f93a67-9817-481e-bc3e-c1c06e0bdcc2"
+      },
+      "agent_name": "lolRecorder",
+      "agent_id": "lol-recorder-1755460989-55480fde",
+      "parent_agent_id": "main-claude-code",
+      "workflow_id": "95f93a67-9817-481e-bc3e-c1c06e0bdcc2",
+      "user_prompt": null,
+      "session_id": null,
+      "correlation_id": "95f93a67-9817-481e-bc3e-c1c06e0bdcc2",
+      "causation_id": "main-claude-code"
+    },
+    {
+      "event_id": "f5805de0-9b2f-4881-980e-772172449348",
+      "aggregate_id": "simonSays-1755460988-34ee6be1",
+      "aggregate_type": "agent_aggregate",
+      "event_type": "agent.simonSays.started",
+      "event_name": "agent.simonSays.started",
+      "timestamp": "2025-08-17T20:03:13.307760Z",
+      "attributes": {
+        "agent_id": "simonSays-1755460988-34ee6be1",
+        "agent_name": "simonSays",
+        "parent_agent_id": "main-claude-code",
+        "start_time": "2025-08-17T20:03:13.305616+00:00",
+        "workflow_id": "95f93a67-9817-481e-bc3e-c1c06e0bdcc2"
+      },
+      "agent_name": "simonSays",
+      "agent_id": "simonSays-1755460988-34ee6be1",
+      "parent_agent_id": "main-claude-code",
+      "workflow_id": "95f93a67-9817-481e-bc3e-c1c06e0bdcc2",
+      "user_prompt": null,
+      "session_id": null,
+      "correlation_id": "95f93a67-9817-481e-bc3e-c1c06e0bdcc2",
+      "causation_id": "main-claude-code"
+    },
+    {
+      "event_id": "5f8dd461-447f-4ca3-99d6-b4bd89b5b35c",
+      "aggregate_id": "simonSays-1755460988-2edb7873",
+      "aggregate_type": "agent_aggregate",
+      "event_type": "agent.simonSays.started",
+      "event_name": "agent.simonSays.started",
+      "timestamp": "2025-08-17T20:03:12.928445Z",
+      "attributes": {
+        "agent_id": "simonSays-1755460988-2edb7873",
+        "agent_name": "simonSays",
+        "parent_agent_id": "main-claude-code",
+        "start_time": "2025-08-17T20:03:12.926225+00:00",
+        "workflow_id": "95f93a67-9817-481e-bc3e-c1c06e0bdcc2"
+      },
+      "agent_name": "simonSays",
+      "agent_id": "simonSays-1755460988-2edb7873",
+      "parent_agent_id": "main-claude-code",
+      "workflow_id": "95f93a67-9817-481e-bc3e-c1c06e0bdcc2",
+      "user_prompt": null,
+      "session_id": null,
+      "correlation_id": "95f93a67-9817-481e-bc3e-c1c06e0bdcc2",
+      "causation_id": "main-claude-code"
+    },
+    {
+      "event_id": "4b568d0d-73a4-41f9-ae1c-31e38341d708",
+      "aggregate_id": "lolRecorder-1755460987-04f61cf9",
+      "aggregate_type": "agent_aggregate",
+      "event_type": "agent.lolRecorder.started",
+      "event_name": "agent.lolRecorder.started",
+      "timestamp": "2025-08-17T20:03:12.026282Z",
+      "attributes": {
+        "agent_id": "lolRecorder-1755460987-04f61cf9",
+        "agent_name": "lolRecorder",
+        "parent_agent_id": "main-claude-code",
+        "start_time": "2025-08-17T20:03:12.011277+00:00",
+        "workflow_id": "95f93a67-9817-481e-bc3e-c1c06e0bdcc2"
+      },
+      "agent_name": "lolRecorder",
+      "agent_id": "lolRecorder-1755460987-04f61cf9",
+      "parent_agent_id": "main-claude-code",
+      "workflow_id": "95f93a67-9817-481e-bc3e-c1c06e0bdcc2",
+      "user_prompt": null,
+      "session_id": null,
+      "correlation_id": "95f93a67-9817-481e-bc3e-c1c06e0bdcc2",
+      "causation_id": "main-claude-code"
+    }
+  ],
+  "summary": {
+    "total_events": 18,
+    "event_types": {
+      "agent.lolRecorder.completed": 2,
+      "agent.lolRecorder.momentRecorded": 2,
+      "agent.simonSays.completed": 2,
+      "agent.lolRecorder.folderCreated": 2,
+      "agent.simonSays.executed": 2,
+      "agent.lolRecorder.contextGathered": 2,
+      "agent.simonSays.commandReceived": 2,
+      "agent.lolRecorder.started": 2,
+      "agent.simonSays.started": 2
+    },
+    "agents_involved": [
+      "lol-recorder-1755460989-55480fde",
+      "lolRecorder-1755460987-04f61cf9",
+      "simonSays-1755460988-2edb7873",
+      "simonSays-1755460988-34ee6be1"
+    ],
+    "workflows_count": 1
+  },
+  "generated_at": "2025-08-17T20:12:45Z"
+}

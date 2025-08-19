@@ -176,29 +176,21 @@ export function EventRiver({
 }: EventRiverProps) {
   // Extract workflows from events
   const workflows = useMemo(() => {
-    console.log('🔍 EventRiver: Processing events for workflows:', events.length, 'events');
     const workflowMap = new Map();
     
     // Process all events and extract workflows
     events.forEach(event => {
-      console.log('🔍 Processing event:', {
-        aggregate: event.aggregate,
-        eventName: event.eventName,
-        attributes: event.attributes
-      });
       
       let workflowId = null;
       
       // Check if this is a direct workflow event
       if (event.aggregate?.toLowerCase().includes('workflow')) {
         workflowId = event.id || event.attributes?.workflow_id || event.attributes?.WORKFLOW_ID;
-        console.log('🔍 Found workflow event, workflowId:', workflowId);
       }
       
       // Check if this is an agent event with a workflow_id
       if (event.aggregate?.toLowerCase().includes('agent')) {
         workflowId = event.attributes?.workflow_id || event.attributes?.WORKFLOW_ID;
-        console.log('🔍 Found agent event, workflowId:', workflowId);
       }
       
       // Create workflow if we found an ID and it's not already tracked
@@ -218,12 +210,10 @@ export function EventRiver({
         };
         
         workflowMap.set(workflowId, newWorkflow);
-        console.log('🔍 Created workflow:', workflowId, 'at position:', newWorkflow.position);
       }
     });
       
     const workflowArray = Array.from(workflowMap.values());
-    console.log('🔍 Final workflows array:', workflowArray.length, 'workflows:', workflowArray.map(w => ({ id: w.id, pos: w.position })));
     return workflowArray;
   }, [events]);
 
@@ -237,7 +227,6 @@ export function EventRiver({
         const workflowId = String(event.attributes?.workflow_id || event.attributes?.WORKFLOW_ID || 'orphaned');
         const agentId = String(event.attributes?.agent_id || event.attributes?.AGENT_ID || event.id);
         
-        console.log('🔍 Agent mapping - workflowId:', workflowId, 'agentId:', agentId);
         
         if (!agentMap.has(workflowId)) {
           agentMap.set(workflowId, new Map());
@@ -248,10 +237,6 @@ export function EventRiver({
           workflowMap.set(agentId, event);
         }
       });
-    
-    console.log('🔍 Agents by workflow map:', Array.from(agentMap.entries()).map(([wId, agents]) => 
-      [wId, Array.from(agents.keys())]
-    ));
     
     return agentMap;
   }, [events]);
