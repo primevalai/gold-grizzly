@@ -1,0 +1,521 @@
+openapi: 3.0.3
+info:
+  title: "{API_NAME}"
+  description: |
+    {API_DESCRIPTION}
+    
+    This API provides {PRIMARY_FUNCTIONALITY} with the following key features:
+    - {FEATURE_1}
+    - {FEATURE_2}
+    - {FEATURE_3}
+    
+    ## Authentication
+    {AUTHENTICATION_DESCRIPTION}
+    
+    ## Rate Limiting
+    {RATE_LIMIT_DESCRIPTION}
+    
+    ## Error Handling
+    All errors follow RFC 7807 Problem Details format with consistent structure.
+    
+  version: "{API_VERSION}"
+  contact:
+    name: "{CONTACT_NAME}"
+    email: "{CONTACT_EMAIL}"
+    url: "{CONTACT_URL}"
+  license:
+    name: "{LICENSE_NAME}"
+    url: "{LICENSE_URL}"
+
+servers:
+  - url: "{PRODUCTION_URL}"
+    description: Production server
+  - url: "{STAGING_URL}"
+    description: Staging server
+  - url: "{DEVELOPMENT_URL}"
+    description: Development server
+
+security:
+  - bearerAuth: []
+  - apiKeyAuth: []
+
+paths:
+  # Health Check Endpoint
+  /health:
+    get:
+      summary: Health check endpoint
+      description: Returns the health status of the API
+      operationId: healthCheck
+      tags:
+        - Health
+      responses:
+        '200':
+          description: Service is healthy
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HealthResponse'
+        '503':
+          description: Service is unhealthy
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  # Core Resource Endpoints Template
+  /{RESOURCE_NAME}:
+    get:
+      summary: List {RESOURCE_NAME}
+      description: Retrieve a paginated list of {RESOURCE_NAME}
+      operationId: list{RESOURCE_NAME_PASCAL}
+      tags:
+        - {RESOURCE_TAG}
+      parameters:
+        - $ref: '#/components/parameters/PageParam'
+        - $ref: '#/components/parameters/LimitParam'
+        - $ref: '#/components/parameters/SortParam'
+        - name: filter
+          in: query
+          description: Filter criteria
+          schema:
+            type: string
+          example: "status=active"
+      responses:
+        '200':
+          description: Successfully retrieved {RESOURCE_NAME}
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/{RESOURCE_NAME_PASCAL}ListResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalError'
+
+    post:
+      summary: Create {RESOURCE_NAME_SINGULAR}
+      description: Create a new {RESOURCE_NAME_SINGULAR}
+      operationId: create{RESOURCE_NAME_PASCAL_SINGULAR}
+      tags:
+        - {RESOURCE_TAG}
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/{RESOURCE_NAME_PASCAL_SINGULAR}CreateRequest'
+      responses:
+        '201':
+          description: Successfully created {RESOURCE_NAME_SINGULAR}
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/{RESOURCE_NAME_PASCAL_SINGULAR}Response'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalError'
+
+  /{RESOURCE_NAME}/{id}:
+    get:
+      summary: Get {RESOURCE_NAME_SINGULAR} by ID
+      description: Retrieve a specific {RESOURCE_NAME_SINGULAR} by its ID
+      operationId: get{RESOURCE_NAME_PASCAL_SINGULAR}
+      tags:
+        - {RESOURCE_TAG}
+      parameters:
+        - $ref: '#/components/parameters/IdParam'
+      responses:
+        '200':
+          description: Successfully retrieved {RESOURCE_NAME_SINGULAR}
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/{RESOURCE_NAME_PASCAL_SINGULAR}Response'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalError'
+
+    put:
+      summary: Update {RESOURCE_NAME_SINGULAR}
+      description: Update an existing {RESOURCE_NAME_SINGULAR}
+      operationId: update{RESOURCE_NAME_PASCAL_SINGULAR}
+      tags:
+        - {RESOURCE_TAG}
+      parameters:
+        - $ref: '#/components/parameters/IdParam'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/{RESOURCE_NAME_PASCAL_SINGULAR}UpdateRequest'
+      responses:
+        '200':
+          description: Successfully updated {RESOURCE_NAME_SINGULAR}
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/{RESOURCE_NAME_PASCAL_SINGULAR}Response'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalError'
+
+    delete:
+      summary: Delete {RESOURCE_NAME_SINGULAR}
+      description: Delete a specific {RESOURCE_NAME_SINGULAR}
+      operationId: delete{RESOURCE_NAME_PASCAL_SINGULAR}
+      tags:
+        - {RESOURCE_TAG}
+      parameters:
+        - $ref: '#/components/parameters/IdParam'
+      responses:
+        '204':
+          description: Successfully deleted {RESOURCE_NAME_SINGULAR}
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalError'
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: JWT-based authentication
+    apiKeyAuth:
+      type: apiKey
+      in: header
+      name: X-API-Key
+      description: API key-based authentication
+
+  parameters:
+    IdParam:
+      name: id
+      in: path
+      required: true
+      description: Resource identifier
+      schema:
+        type: string
+        format: uuid
+        example: "123e4567-e89b-12d3-a456-426614174000"
+
+    PageParam:
+      name: page
+      in: query
+      description: Page number for pagination
+      schema:
+        type: integer
+        minimum: 1
+        default: 1
+        example: 1
+
+    LimitParam:
+      name: limit
+      in: query
+      description: Number of items per page
+      schema:
+        type: integer
+        minimum: 1
+        maximum: 100
+        default: 20
+        example: 20
+
+    SortParam:
+      name: sort
+      in: query
+      description: Sort field and direction (field:asc|desc)
+      schema:
+        type: string
+        example: "created_at:desc"
+
+  schemas:
+    # Base Response Schemas
+    HealthResponse:
+      type: object
+      required:
+        - status
+        - timestamp
+        - version
+      properties:
+        status:
+          type: string
+          enum: [healthy, unhealthy]
+          example: "healthy"
+        timestamp:
+          type: string
+          format: date-time
+          example: "2023-12-01T12:00:00Z"
+        version:
+          type: string
+          example: "1.0.0"
+        dependencies:
+          type: object
+          additionalProperties:
+            type: string
+            enum: [healthy, unhealthy]
+          example:
+            database: "healthy"
+            cache: "healthy"
+
+    ErrorResponse:
+      type: object
+      required:
+        - type
+        - title
+        - status
+        - detail
+        - instance
+      properties:
+        type:
+          type: string
+          format: uri
+          example: "https://api.example.com/problems/validation-error"
+        title:
+          type: string
+          example: "Validation Error"
+        status:
+          type: integer
+          example: 400
+        detail:
+          type: string
+          example: "The request body is invalid"
+        instance:
+          type: string
+          format: uri
+          example: "/users/123"
+        errors:
+          type: array
+          items:
+            type: object
+            properties:
+              field:
+                type: string
+              message:
+                type: string
+          example:
+            - field: "email"
+              message: "Email is required"
+
+    PaginationMeta:
+      type: object
+      required:
+        - page
+        - limit
+        - total
+        - pages
+      properties:
+        page:
+          type: integer
+          minimum: 1
+          example: 1
+        limit:
+          type: integer
+          minimum: 1
+          example: 20
+        total:
+          type: integer
+          minimum: 0
+          example: 100
+        pages:
+          type: integer
+          minimum: 0
+          example: 5
+
+    # Resource Schema Template
+    {RESOURCE_NAME_PASCAL_SINGULAR}Response:
+      type: object
+      required:
+        - id
+        - created_at
+        - updated_at
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Unique identifier
+          example: "123e4567-e89b-12d3-a456-426614174000"
+        created_at:
+          type: string
+          format: date-time
+          description: Creation timestamp
+          example: "2023-12-01T12:00:00Z"
+        updated_at:
+          type: string
+          format: date-time
+          description: Last update timestamp
+          example: "2023-12-01T12:00:00Z"
+        # Add resource-specific properties here
+        # {RESOURCE_PROPERTY_1}:
+        #   type: string
+        #   description: {RESOURCE_PROPERTY_1_DESCRIPTION}
+        #   example: "{RESOURCE_PROPERTY_1_EXAMPLE}"
+
+    {RESOURCE_NAME_PASCAL_SINGULAR}CreateRequest:
+      type: object
+      required:
+        - {REQUIRED_FIELD_1}
+      properties:
+        # Add creation fields here
+        # {REQUIRED_FIELD_1}:
+        #   type: string
+        #   description: {REQUIRED_FIELD_1_DESCRIPTION}
+        #   example: "{REQUIRED_FIELD_1_EXAMPLE}"
+
+    {RESOURCE_NAME_PASCAL_SINGULAR}UpdateRequest:
+      type: object
+      properties:
+        # Add update fields here (usually optional versions of creation fields)
+        # {OPTIONAL_FIELD_1}:
+        #   type: string
+        #   description: {OPTIONAL_FIELD_1_DESCRIPTION}
+        #   example: "{OPTIONAL_FIELD_1_EXAMPLE}"
+
+    {RESOURCE_NAME_PASCAL}ListResponse:
+      type: object
+      required:
+        - data
+        - meta
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/{RESOURCE_NAME_PASCAL_SINGULAR}Response'
+        meta:
+          $ref: '#/components/schemas/PaginationMeta'
+
+  responses:
+    BadRequest:
+      description: Bad request - invalid input
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            type: "https://api.example.com/problems/validation-error"
+            title: "Validation Error"
+            status: 400
+            detail: "The request contains invalid parameters"
+            instance: "/api/v1/users"
+
+    Unauthorized:
+      description: Unauthorized - authentication required
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            type: "https://api.example.com/problems/unauthorized"
+            title: "Unauthorized"
+            status: 401
+            detail: "Authentication credentials are required"
+            instance: "/api/v1/users"
+
+    NotFound:
+      description: Not found - resource doesn't exist
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            type: "https://api.example.com/problems/not-found"
+            title: "Not Found"
+            status: 404
+            detail: "The requested resource was not found"
+            instance: "/api/v1/users/123"
+
+    Conflict:
+      description: Conflict - resource already exists or constraint violation
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            type: "https://api.example.com/problems/conflict"
+            title: "Conflict"
+            status: 409
+            detail: "The resource already exists"
+            instance: "/api/v1/users"
+
+    TooManyRequests:
+      description: Too many requests - rate limit exceeded
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            type: "https://api.example.com/problems/rate-limit"
+            title: "Too Many Requests"
+            status: 429
+            detail: "Rate limit exceeded"
+            instance: "/api/v1/users"
+      headers:
+        Retry-After:
+          description: Seconds to wait before retrying
+          schema:
+            type: integer
+            example: 60
+
+    InternalError:
+      description: Internal server error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            type: "https://api.example.com/problems/internal-error"
+            title: "Internal Server Error"
+            status: 500
+            detail: "An unexpected error occurred"
+            instance: "/api/v1/users"
+
+# Custom extension for integration patterns
+x-integration-patterns:
+  retry_strategy:
+    max_attempts: 3
+    backoff_strategy: "exponential"
+    base_delay_ms: 1000
+    max_delay_ms: 30000
+
+  circuit_breaker:
+    failure_threshold: 5
+    timeout_ms: 30000
+    reset_timeout_ms: 60000
+
+  rate_limiting:
+    requests_per_minute: 1000
+    burst_capacity: 100
+
+  monitoring:
+    health_check_interval_ms: 30000
+    metrics_collection: true
+    distributed_tracing: true

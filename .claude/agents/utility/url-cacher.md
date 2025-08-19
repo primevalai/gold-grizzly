@@ -30,8 +30,8 @@ This agent follows the new three-aggregate event system. Each agent instance cre
 ```
 # Extract values from the ===AGENT_CONTEXT=== block:
 # ===AGENT_CONTEXT===
-# AGENT_ID: urlCacher-0000000000-00000000
-# WORKFLOW_ID: 00000000-0000-0000-0000-000000000000
+# AGENT_ID: urlCacher-00000000000000000000000000000000
+# WORKFLOW_ID: workflow-00000000000000000000000000000000
 # PARENT: main-claude-code
 # TIMESTAMP: 2025-08-13T15:45:08Z
 # ===END_CONTEXT===

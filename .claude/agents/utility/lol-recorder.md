@@ -23,8 +23,8 @@ First, extract the provided context IDs from the prompt and start the agent:
 ```
 # Extract values from the ===AGENT_CONTEXT=== block:
 # ===AGENT_CONTEXT===
-# AGENT_ID: lolRecorder-0000000000-00000000
-# WORKFLOW_ID: 00000000-0000-0000-0000-000000000000
+# AGENT_ID: lolRecorder-00000000000000000000000000000000
+# WORKFLOW_ID: workflow-00000000000000000000000000000000
 # PARENT: main-claude-code
 # TIMESTAMP: 2025-08-13T15:45:08Z
 # ===END_CONTEXT===

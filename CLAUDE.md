@@ -65,7 +65,7 @@ python -m pip install requests
 ```bash
 # YOU MUST GENERATE THESE - NO EXCEPTIONS
 AGENT_ID=$(./.claude/scripts/generate-uuid.sh --agent-id "${agent_name}")
-WORKFLOW_ID=${current_workflow_id:-$(./.claude/scripts/generate-uuid.sh)}
+WORKFLOW_ID=${current_workflow_id:-workflow-$(./.claude/scripts/generate-uuid.sh --short)}
 TIMESTAMP=$(date -u +%Y-%m-%dT%H:%M:%SZ)
 ```
 
@@ -75,8 +75,8 @@ import uuid
 from datetime import datetime
 
 # YOU MUST GENERATE THESE - NO EXCEPTIONS
-AGENT_ID = f"{agent_name}-{int(datetime.now().timestamp())}-{uuid.uuid4().hex[:8]}"
-WORKFLOW_ID = current_workflow_id or str(uuid.uuid4())
+AGENT_ID = f"{agent_name}-{uuid.uuid4().hex}"
+WORKFLOW_ID = current_workflow_id or f"workflow-{uuid.uuid4().hex}"
 TIMESTAMP = datetime.now().isoformat()
 ```
 
@@ -119,8 +119,8 @@ Your response MUST be:
 I'll use the simon-says agent to execute Simon's command.
 
 📋 Adding agent context:
-• AGENT_ID: simonSays-0000000000-00000000
-• WORKFLOW_ID: 00000000-0000-0000-0000-000000000000
+• AGENT_ID: simonSays-00000000000000000000000000000000
+• WORKFLOW_ID: workflow-00000000000000000000000000000000
 • TIMESTAMP: 2025-08-13T15:45:08Z
 
 [Invoking simon-says agent with context...]
@@ -131,8 +131,8 @@ Then invoke with:
 <invoke name="Task">
 <parameter name="prompt">
 ===AGENT_CONTEXT===
-AGENT_ID: simonSays-0000000000-00000000
-WORKFLOW_ID: 00000000-0000-0000-0000-000000000000
+AGENT_ID: simonSays-00000000000000000000000000000000
+WORKFLOW_ID: workflow-00000000000000000000000000000000
 PARENT: main-claude-code
 TIMESTAMP: 2025-08-13T15:45:08Z
 ===END_CONTEXT===

@@ -1,0 +1,7 @@
+{
+  "workflow_id": "workflow-XXXXXXXX",
+  "agent_id": "agentType-XXXXXXXX",
+  "parent_agent_id": "parentAgent-XXXXXXXX",
+  "timestamp": "2024-01-01T00:00:00Z",
+  "context": {}
+}

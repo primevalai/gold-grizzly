@@ -2,7 +2,7 @@
 
 # UUID generation script for Gold Grizzly project
 # Generates UUIDs for contexts where Python/JavaScript UUID libraries aren't available
-# Usage: ./generate-uuid.sh [--agent-id <agentName>] [--short]
+# Usage: ./generate-uuid.sh [--agent-id <agentName>] [--workflow] [--short]
 
 set -euo pipefail
 
@@ -33,6 +33,7 @@ print_usage() {
     echo ""
     echo "Options:"
     echo "  --agent-id <name>  Generate agent ID format: <agentName>-<uuid>"
+    echo "  --workflow         Generate workflow ID format: workflow-<uuid_without_hyphens>"
     echo "  --short            Generate short UUID without hyphens"
     echo "  --help             Show this help message"
     echo ""
@@ -40,11 +41,13 @@ print_usage() {
     echo "  $0                           # Full UUID: 550e8400-e29b-41d4-a716-446655440000"
     echo "  $0 --short                   # Short UUID: 550e8400e29b41d4a716446655440000"
     echo "  $0 --agent-id simonSays      # Agent ID: simonSays-550e8400e29b41d4a716446655440000"
+    echo "  $0 --workflow                # Workflow ID: workflow-550e8400e29b41d4a716446655440000"
 }
 
 main() {
     local agent_name=""
     local short_format=false
+    local workflow_format=false
     
     # Parse command line arguments
     while [[ $# -gt 0 ]]; do
@@ -56,6 +59,10 @@ main() {
                 fi
                 agent_name="$2"
                 shift 2
+                ;;
+            --workflow)
+                workflow_format=true
+                shift
                 ;;
             --short)
                 short_format=true
@@ -87,6 +94,10 @@ main() {
         # Agent ID format: <agentName>-<uuid>
         uuid_no_hyphens=$(remove_hyphens "$uuid")
         echo "${agent_name}-${uuid_no_hyphens}"
+    elif [[ "$workflow_format" = true ]]; then
+        # Workflow ID format: workflow-<uuid_without_hyphens>
+        uuid_no_hyphens=$(remove_hyphens "$uuid")
+        echo "workflow-${uuid_no_hyphens}"
     elif [[ "$short_format" = true ]]; then
         # Short format without hyphens
         remove_hyphens "$uuid"
