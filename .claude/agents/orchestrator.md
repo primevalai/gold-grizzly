@@ -25,8 +25,8 @@ First, extract the provided context IDs from the prompt and start the agent:
 ```
 # Extract values from the ===AGENT_CONTEXT=== block:
 # ===AGENT_CONTEXT===
-# AGENT_ID: orchestrator-0000000000-00000000
-# WORKFLOW_ID: 00000000-0000-0000-0000-000000000000
+# AGENT_ID: orchestrator-00000000000000000000000000000000
+# WORKFLOW_ID: 00000000000000000000000000000000
 # PARENT: main-claude-code
 # TIMESTAMP: 2025-08-13T15:45:08Z
 # ===END_CONTEXT===
@@ -69,8 +69,8 @@ For each discovered agent, use the Read tool to examine their descriptions and c
 After discovering available agents, analyze their execution characteristics for parallelization:
 ```bash
 # Use the same extracted IDs
-AGENT_ID="orchestrator-0000000000-00000000"  # Same as extracted above
-WORKFLOW_ID="00000000-0000-0000-0000-000000000000"  # Same as extracted above
+AGENT_ID="orchestrator-00000000000000000000000000000000"  # Same as extracted above
+WORKFLOW_ID="00000000000000000000000000000000"  # Same as extracted above
 
 # CRITICAL: STRONGLY ENCOURAGE PARALLEL EXECUTION BY DEFAULT
 # Unless there is a VERY compelling technical dependency, agents should run in parallel
@@ -308,8 +308,8 @@ Use mcp__eventuali__emit_agent_event with:
 Check if the user requested execution and provide structured instructions to Claude Code instead of creating todos:
 ```bash
 # Use the same extracted IDs
-AGENT_ID="orchestrator-0000000000-00000000"  # Same as extracted above
-WORKFLOW_ID="00000000-0000-0000-0000-000000000000"  # Same as extracted above
+AGENT_ID="orchestrator-00000000000000000000000000000000"  # Same as extracted above
+WORKFLOW_ID="00000000000000000000000000000000"  # Same as extracted above
 
 # Extract the original user request to check for execution keywords
 USER_REQUEST="coordinate three Simon says messages and execute the plan"  # Replace with actual extracted request
@@ -590,8 +590,8 @@ After providing execution instructions to the user, write one final todo that Cl
 
 ```bash
 # Use the same extracted IDs
-AGENT_ID="orchestrator-0000000000-00000000"  # Same as extracted above
-WORKFLOW_ID="00000000-0000-0000-0000-000000000000"  # Same as extracted above
+AGENT_ID="orchestrator-00000000000000000000000000000000"  # Same as extracted above
+WORKFLOW_ID="00000000000000000000000000000000"  # Same as extracted above
 
 # Create a final todo containing the complete execution plan
 # This allows Claude Code to execute the orchestrated plan directly

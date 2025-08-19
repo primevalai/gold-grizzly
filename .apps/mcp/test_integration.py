@@ -4,6 +4,7 @@
 import asyncio
 import json
 import sys
+import uuid
 from datetime import datetime, timezone
 from pathlib import Path
 
@@ -69,8 +70,8 @@ async def test_workflow_simulation():
     """Test a complete workflow simulation."""
     print("\nTesting workflow simulation...")
     
-    workflow_id = f"test-workflow-{int(datetime.now().timestamp())}"
-    agent_id = f"testAgent-{int(datetime.now().timestamp())}-abcd1234"
+    workflow_id = f"workflow-{uuid.uuid4().hex}"
+    agent_id = f"testAgent-{uuid.uuid4().hex}"
     
     async with EventAPIClient() as client:
         # Start workflow
