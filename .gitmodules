@@ -1,0 +1,3 @@
+[submodule ".apps/ui"]
+	path = .apps/ui
+	url = git@github.com:primevalai/gold-grizzly-ui.git
