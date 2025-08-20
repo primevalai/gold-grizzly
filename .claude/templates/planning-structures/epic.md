@@ -74,4 +74,4 @@ workflow_id: {workflow_id}
 
 ---
 
-*This epic is managed by the Onyx Owl orchestration system. All updates are tracked in the planning database and journal.*
+*This epic is managed by the orchestration system. All updates are tracked in the planning database and journal.*

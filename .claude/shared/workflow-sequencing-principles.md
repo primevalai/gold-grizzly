@@ -2,7 +2,7 @@
 
 **CRITICAL FOUNDATION RULE**: Architecture Before Planning
 
-This document establishes the fundamental workflow sequencing that ALL Onyx Owl agents must respect.
+This document establishes the fundamental workflow sequencing that ALL agents must respect.
 
 ## The Immutable Sequence
 
@@ -183,4 +183,4 @@ Planning Orchestrator → Creates: "Optimize user query indexes", "Implement con
 **ENFORCEMENT**: All orchestration agents MUST validate this sequencing. Any agent that violates this principle should error and request proper workflow order.
 
 *Last Updated: 2025-08-10*  
-*Status: MANDATORY for all Onyx Owl agents*
+*Status: MANDATORY for all agents*
