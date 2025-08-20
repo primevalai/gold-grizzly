@@ -403,11 +403,41 @@ async def create_event(
                 attributes=event_request.attributes
             )
             
-            # Set base Event class fields after creation
+            # Extract UUID from prefixed IDs for eventuali compatibility
             if event_request.correlation_id:
-                event.correlation_id = event_request.correlation_id
+                # Handle workflow-<uuid> format
+                if event_request.correlation_id.startswith('workflow-'):
+                    uuid_part = event_request.correlation_id[9:]  # Remove 'workflow-' prefix
+                    try:
+                        event.correlation_id = uuid.UUID(uuid_part)
+                    except ValueError:
+                        # If not a valid UUID, leave as None
+                        pass
+                else:
+                    # Try to parse as UUID directly
+                    try:
+                        event.correlation_id = uuid.UUID(event_request.correlation_id)
+                    except ValueError:
+                        # Not a valid UUID, leave as None
+                        pass
+            
             if event_request.causation_id:
-                event.causation_id = event_request.causation_id
+                # Handle agentName-<uuid> format
+                if '-' in event_request.causation_id:
+                    parts = event_request.causation_id.split('-', 1)
+                    if len(parts) == 2:
+                        try:
+                            event.causation_id = uuid.UUID(parts[1])
+                        except ValueError:
+                            # Not a valid UUID (e.g., 'main-claude-code'), leave as None
+                            pass
+                else:
+                    # Try to parse as UUID directly
+                    try:
+                        event.causation_id = uuid.UUID(event_request.causation_id)
+                    except ValueError:
+                        # Not a valid UUID, leave as None
+                        pass
             
             aggregate.apply(event)
             
