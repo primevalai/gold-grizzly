@@ -1,0 +1,48 @@
+[project]
+name = "listener"
+version = "0.1.0"
+description = "Autonomous event stream orchestrator for Gold Grizzly"
+requires-python = ">=3.12"
+dependencies = [
+    "httpx>=0.24.0",
+    "pydantic>=2.0.0",
+    "aiofiles>=23.0.0",
+    "eventuali-mcp-server>=0.1.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.4.0",
+    "pytest-asyncio>=0.21.0",
+    "black>=23.0.0",
+    "flake8>=6.0.0",
+    "pydocstyle>=6.3.0"
+]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["core", "models", "handlers", "services", "dependencies"]
+
+[tool.black]
+line-length = 79
+target-version = ['py312']
+
+[tool.flake8]
+max-line-length = 79
+exclude = [
+    ".git",
+    "__pycache__",
+    ".pytest_cache",
+    "build",
+    "dist",
+]
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+testpaths = ["tests"]
+python_files = ["test_*.py"]
+python_classes = ["Test*"]
+python_functions = ["test_*"]

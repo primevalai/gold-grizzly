@@ -19,11 +19,15 @@ if [[ ! -d ".venv" ]]; then
     uv venv
 fi
 
-# Check if dependencies are installed
-if ! uv pip list | grep -q "httpx"; then
-    echo "📦 Installing dependencies..."
-    uv pip install httpx pydantic
+# Install listener dependencies using pyproject.toml
+echo "📦 Installing listener dependencies..."
+cd .apps/listener
+uv pip install -e .
+if [[ $? -ne 0 ]]; then
+    echo "⚠️ Failed to install from pyproject.toml, installing individually..."
+    uv pip install httpx pydantic aiofiles
 fi
+cd ../..
 
 # Check if API server is running
 if ! curl -s http://127.0.0.1:8765/health > /dev/null; then
