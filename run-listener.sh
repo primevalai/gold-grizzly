@@ -38,4 +38,4 @@ echo "   Press Ctrl+C to stop gracefully"
 echo ""
 
 # Run with unbuffered output
-PYTHONUNBUFFERED=1 uv run .claude/scripts/event-orchestrator.py
+PYTHONUNBUFFERED=1 uv run .apps/listener/main.py

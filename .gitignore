@@ -1,1 +1,3 @@
 .apps/ui-legacy/
+.logs/
+.venv
